@@ -22,7 +22,7 @@ parameters:
     llm_description: "Image URL for translation"
     form: llm
   - name: source_lang
-    type: string
+    type: select
     required: false
     label:
       en_US: Source Language
@@ -33,8 +33,69 @@ parameters:
     llm_description: "Source language (auto for auto-detect)"
     form: form
     default: "auto"
+    options:
+      - value: "auto"
+        label:
+          en_US: "Auto"
+          zh_Hans: "自动"
+      - value: "zh"
+        label:
+          en_US: "Chinese"
+          zh_Hans: "中文"
+      - value: "en"
+        label:
+          en_US: "English"
+          zh_Hans: "英文"
+      - value: "ja"
+        label:
+          en_US: "Japanese"
+          zh_Hans: "日语"
+      - value: "ko"
+        label:
+          en_US: "Korean"
+          zh_Hans: "韩语"
+      - value: "fr"
+        label:
+          en_US: "French"
+          zh_Hans: "法语"
+      - value: "de"
+        label:
+          en_US: "German"
+          zh_Hans: "德语"
+      - value: "es"
+        label:
+          en_US: "Spanish"
+          zh_Hans: "西班牙语"
+      - value: "ru"
+        label:
+          en_US: "Russian"
+          zh_Hans: "俄语"
+      - value: "it"
+        label:
+          en_US: "Italian"
+          zh_Hans: "意大利语"
+      - value: "pt"
+        label:
+          en_US: "Portuguese"
+          zh_Hans: "葡萄牙语"
+      - value: "ar"
+        label:
+          en_US: "Arabic"
+          zh_Hans: "阿拉伯语"
+      - value: "th"
+        label:
+          en_US: "Thai"
+          zh_Hans: "泰语"
+      - value: "vi"
+        label:
+          en_US: "Vietnamese"
+          zh_Hans: "越南语"
+      - value: "id"
+        label:
+          en_US: "Indonesian"
+          zh_Hans: "印尼语"
   - name: target_lang
-    type: string
+    type: select
     required: true
     label:
       en_US: Target Language
@@ -44,6 +105,63 @@ parameters:
       zh_Hans: "目标语言"
     llm_description: "Target language"
     form: llm
+    options:
+      - value: "zh"
+        label:
+          en_US: "Chinese"
+          zh_Hans: "中文"
+      - value: "en"
+        label:
+          en_US: "English"
+          zh_Hans: "英文"
+      - value: "ja"
+        label:
+          en_US: "Japanese"
+          zh_Hans: "日语"
+      - value: "ko"
+        label:
+          en_US: "Korean"
+          zh_Hans: "韩语"
+      - value: "fr"
+        label:
+          en_US: "French"
+          zh_Hans: "法语"
+      - value: "de"
+        label:
+          en_US: "German"
+          zh_Hans: "德语"
+      - value: "es"
+        label:
+          en_US: "Spanish"
+          zh_Hans: "西班牙语"
+      - value: "ru"
+        label:
+          en_US: "Russian"
+          zh_Hans: "俄语"
+      - value: "it"
+        label:
+          en_US: "Italian"
+          zh_Hans: "意大利语"
+      - value: "pt"
+        label:
+          en_US: "Portuguese"
+          zh_Hans: "葡萄牙语"
+      - value: "ar"
+        label:
+          en_US: "Arabic"
+          zh_Hans: "阿拉伯语"
+      - value: "th"
+        label:
+          en_US: "Thai"
+          zh_Hans: "泰语"
+      - value: "vi"
+        label:
+          en_US: "Vietnamese"
+          zh_Hans: "越南语"
+      - value: "id"
+        label:
+          en_US: "Indonesian"
+          zh_Hans: "印尼语"
   - name: domain_hint
     type: string
     required: false
