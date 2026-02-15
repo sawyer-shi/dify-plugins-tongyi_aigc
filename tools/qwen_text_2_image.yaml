@@ -87,7 +87,7 @@ parameters:
       zh_Hans: "是否在图像上添加水印"
     llm_description: "Whether to add watermark"
     form: form
-    default: false
+    default: true
   - name: seed
     type: number
     required: false
