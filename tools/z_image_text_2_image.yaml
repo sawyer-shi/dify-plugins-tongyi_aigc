@@ -1,0 +1,213 @@
+identity:
+  name: "z_image_text_2_image"
+  author: "sawyer-shi"
+  label:
+    en_US: "Z-Image Text to Image"
+    zh_Hans: "Z-Image-文生图"
+description:
+  human:
+    en_US: "Generate images from text using Z-Image Turbo"
+    zh_Hans: "使用Z-Image Turbo模型根据文本生成图像"
+  llm: "Generate images from text using Z-Image Turbo"
+parameters:
+  - name: prompt
+    type: string
+    required: true
+    label:
+      en_US: Prompt
+      zh_Hans: 提示词
+    human_description:
+      en_US: "Text description of the image you want to generate (<=800 chars)"
+      zh_Hans: "您想要生成的图像的文本描述（<=800字符）"
+    llm_description: "Text description of the image to generate"
+    form: llm
+  - name: size
+    type: select
+    required: false
+    label:
+      en_US: Image Size
+      zh_Hans: 图像尺寸
+    human_description:
+      en_US: "Size of the generated image"
+      zh_Hans: "生成图像的尺寸"
+    llm_description: "Size of the generated image"
+    form: form
+    default: "1024*1536"
+    options:
+      - value: "1024*1024"
+        label:
+          en_US: "1:1 (1024*1024)"
+          zh_Hans: "1:1 (1024*1024)"
+      - value: "832*1248"
+        label:
+          en_US: "2:3 (832*1248)"
+          zh_Hans: "2:3 (832*1248)"
+      - value: "1248*832"
+        label:
+          en_US: "3:2 (1248*832)"
+          zh_Hans: "3:2 (1248*832)"
+      - value: "864*1152"
+        label:
+          en_US: "3:4 (864*1152)"
+          zh_Hans: "3:4 (864*1152)"
+      - value: "1152*864"
+        label:
+          en_US: "4:3 (1152*864)"
+          zh_Hans: "4:3 (1152*864)"
+      - value: "896*1152"
+        label:
+          en_US: "7:9 (896*1152)"
+          zh_Hans: "7:9 (896*1152)"
+      - value: "1152*896"
+        label:
+          en_US: "9:7 (1152*896)"
+          zh_Hans: "9:7 (1152*896)"
+      - value: "720*1280"
+        label:
+          en_US: "9:16 (720*1280)"
+          zh_Hans: "9:16 (720*1280)"
+      - value: "576*1344"
+        label:
+          en_US: "9:21 (576*1344)"
+          zh_Hans: "9:21 (576*1344)"
+      - value: "1280*720"
+        label:
+          en_US: "16:9 (1280*720)"
+          zh_Hans: "16:9 (1280*720)"
+      - value: "1344*576"
+        label:
+          en_US: "21:9 (1344*576)"
+          zh_Hans: "21:9 (1344*576)"
+      - value: "1280*1280"
+        label:
+          en_US: "1:1 (1280*1280)"
+          zh_Hans: "1:1 (1280*1280)"
+      - value: "1024*1536"
+        label:
+          en_US: "2:3 (1024*1536)"
+          zh_Hans: "2:3 (1024*1536)"
+      - value: "1536*1024"
+        label:
+          en_US: "3:2 (1536*1024)"
+          zh_Hans: "3:2 (1536*1024)"
+      - value: "1104*1472"
+        label:
+          en_US: "3:4 (1104*1472)"
+          zh_Hans: "3:4 (1104*1472)"
+      - value: "1472*1104"
+        label:
+          en_US: "4:3 (1472*1104)"
+          zh_Hans: "4:3 (1472*1104)"
+      - value: "1120*1440"
+        label:
+          en_US: "7:9 (1120*1440)"
+          zh_Hans: "7:9 (1120*1440)"
+      - value: "1440*1120"
+        label:
+          en_US: "9:7 (1440*1120)"
+          zh_Hans: "9:7 (1440*1120)"
+      - value: "864*1536"
+        label:
+          en_US: "9:16 (864*1536)"
+          zh_Hans: "9:16 (864*1536)"
+      - value: "720*1680"
+        label:
+          en_US: "9:21 (720*1680)"
+          zh_Hans: "9:21 (720*1680)"
+      - value: "1536*864"
+        label:
+          en_US: "16:9 (1536*864)"
+          zh_Hans: "16:9 (1536*864)"
+      - value: "1680*720"
+        label:
+          en_US: "21:9 (1680*720)"
+          zh_Hans: "21:9 (1680*720)"
+      - value: "1536*1536"
+        label:
+          en_US: "1:1 (1536*1536)"
+          zh_Hans: "1:1 (1536*1536)"
+      - value: "1248*1872"
+        label:
+          en_US: "2:3 (1248*1872)"
+          zh_Hans: "2:3 (1248*1872)"
+      - value: "1872*1248"
+        label:
+          en_US: "3:2 (1872*1248)"
+          zh_Hans: "3:2 (1872*1248)"
+      - value: "1296*1728"
+        label:
+          en_US: "3:4 (1296*1728)"
+          zh_Hans: "3:4 (1296*1728)"
+      - value: "1728*1296"
+        label:
+          en_US: "4:3 (1728*1296)"
+          zh_Hans: "4:3 (1728*1296)"
+      - value: "1344*1728"
+        label:
+          en_US: "7:9 (1344*1728)"
+          zh_Hans: "7:9 (1344*1728)"
+      - value: "1728*1344"
+        label:
+          en_US: "9:7 (1728*1344)"
+          zh_Hans: "9:7 (1728*1344)"
+      - value: "1152*2048"
+        label:
+          en_US: "9:16 (1152*2048)"
+          zh_Hans: "9:16 (1152*2048)"
+      - value: "864*2016"
+        label:
+          en_US: "9:21 (864*2016)"
+          zh_Hans: "9:21 (864*2016)"
+      - value: "2048*1152"
+        label:
+          en_US: "16:9 (2048*1152)"
+          zh_Hans: "16:9 (2048*1152)"
+      - value: "2016*864"
+        label:
+          en_US: "21:9 (2016*864)"
+          zh_Hans: "21:9 (2016*864)"
+  - name: prompt_extend
+    type: boolean
+    required: false
+    label:
+      en_US: Prompt Extend
+      zh_Hans: 提示词智能改写
+    human_description:
+      en_US: "Enable AI-powered prompt optimization (affects pricing)"
+      zh_Hans: "启用提示词智能改写（影响计费）"
+    llm_description: "Whether to enable prompt intelligent rewriting"
+    form: form
+    default: false
+  - name: seed
+    type: number
+    required: false
+    label:
+      en_US: Seed
+      zh_Hans: 随机种子
+    human_description:
+      en_US: "Random seed for reproducible results"
+      zh_Hans: "用于可重复结果的随机种子"
+    llm_description: "Random seed for reproducible results"
+    form: form
+    min: 0
+    max: 2147483647
+  - name: model
+    type: select
+    required: false
+    label:
+      en_US: Model Version
+      zh_Hans: 模型版本
+    human_description:
+      en_US: "Choose the Z-Image model version"
+      zh_Hans: "选择要使用的Z-Image模型版本"
+    llm_description: "Choose the Z-Image model version"
+    form: form
+    default: "z-image-turbo"
+    options:
+      - value: "z-image-turbo"
+        label:
+          en_US: "Z-Image Turbo"
+          zh_Hans: "Z-Image Turbo"
+extra:
+  python:
+    source: tools/z_image_text_2_image.py

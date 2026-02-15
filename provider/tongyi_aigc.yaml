@@ -23,6 +23,7 @@ credentials_for_provider:
     type: secret-input
     url: https://dashscope.console.aliyun.com/apiKey
 tools:
+  - tools/z_image_text_2_image.yaml
   - tools/qwen_text_2_image.yaml
   - tools/qwen_image_2_image.yaml
   - tools/qwen_image_translate.yaml
