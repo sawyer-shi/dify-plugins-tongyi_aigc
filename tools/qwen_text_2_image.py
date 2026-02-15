@@ -40,12 +40,20 @@ class QwenText2ImageTool(Tool):
                 yield self.create_text_message(msg)
                 return
 
-            model = tool_parameters.get("model", "qwen-image-plus")
+            if len(prompt) > 800:
+                prompt = prompt[:800]
+
+            model = tool_parameters.get("model", "qwen-image-max")
             negative_prompt = tool_parameters.get("negative_prompt", "")
+            if negative_prompt:
+                negative_prompt = negative_prompt[:500]
             prompt_extend = tool_parameters.get("prompt_extend")
             watermark = tool_parameters.get("watermark")
             size = tool_parameters.get("size", "")
             seed = tool_parameters.get("seed")
+
+            if not size:
+                size = "1664*928"
 
             yield self.create_text_message("🚀 文生图任务启动中...")
             yield self.create_text_message(f"🤖 使用模型: {model}")
@@ -77,8 +85,7 @@ class QwenText2ImageTool(Tool):
                 payload["parameters"]["prompt_extend"] = prompt_extend
             if watermark is not None:
                 payload["parameters"]["watermark"] = watermark
-            if size:
-                payload["parameters"]["size"] = size
+            payload["parameters"]["size"] = size
             if seed is not None:
                 try:
                     payload["parameters"]["seed"] = int(seed)

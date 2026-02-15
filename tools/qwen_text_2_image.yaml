@@ -22,7 +22,7 @@ parameters:
     llm_description: "Text description of the image to generate"
     form: llm
   - name: size
-    type: string
+    type: select
     required: false
     label:
       en_US: Image Size
@@ -32,7 +32,28 @@ parameters:
       zh_Hans: "生成图像的尺寸"
     llm_description: "Size of the generated image"
     form: form
-    default: ""
+    default: "1664*928"
+    options:
+      - value: "1664*928"
+        label:
+          en_US: "16:9 (1664*928)"
+          zh_Hans: "16:9 (1664*928)"
+      - value: "1472*1104"
+        label:
+          en_US: "4:3 (1472*1104)"
+          zh_Hans: "4:3 (1472*1104)"
+      - value: "1328*1328"
+        label:
+          en_US: "1:1 (1328*1328)"
+          zh_Hans: "1:1 (1328*1328)"
+      - value: "1104*1472"
+        label:
+          en_US: "3:4 (1104*1472)"
+          zh_Hans: "3:4 (1104*1472)"
+      - value: "928*1664"
+        label:
+          en_US: "9:16 (928*1664)"
+          zh_Hans: "9:16 (928*1664)"
   - name: negative_prompt
     type: string
     required: false
@@ -66,6 +87,7 @@ parameters:
       zh_Hans: "是否在图像上添加水印"
     llm_description: "Whether to add watermark"
     form: form
+    default: false
   - name: seed
     type: number
     required: false
@@ -88,16 +110,24 @@ parameters:
       zh_Hans: "选择要使用的Qwen模型版本"
     llm_description: "Choose the Qwen model version"
     form: form
-    default: "qwen-image-plus"
+    default: "qwen-image-max"
     options:
+      - value: "qwen-image-max"
+        label:
+          en_US: "Qwen Image Max"
+          zh_Hans: "Qwen Image Max"
+      - value: "qwen-image-max-2025-12-30"
+        label:
+          en_US: "Qwen Image Max 2025-12-30"
+          zh_Hans: "Qwen Image Max 2025-12-30"
       - value: "qwen-image-plus"
         label:
           en_US: "Qwen Image Plus"
           zh_Hans: "Qwen Image Plus"
-      - value: "qwen-image-edit-plus-2025-12-15"
+      - value: "qwen-image-plus-2026-01-09"
         label:
-          en_US: "Qwen Image Edit Plus"
-          zh_Hans: "Qwen Image Edit Plus"
+          en_US: "Qwen Image Plus 2026-01-09"
+          zh_Hans: "Qwen Image Plus 2026-01-09"
 extra:
   python:
     source: tools/qwen_text_2_image.py
