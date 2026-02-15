@@ -43,20 +43,20 @@ class QwenImage2ImageTool(Tool):
                 yield self.create_text_message(msg)
                 return
 
-            images = tool_parameters.get("images", [])
-            if not images or not isinstance(images, list):
+            if len(prompt) > 800:
+                prompt = prompt[:800]
+
+            image = tool_parameters.get("image")
+            if not image:
                 msg = "❌ 请提供参考图像"
                 logger.warning(msg)
                 yield self.create_text_message(msg)
                 return
-            if len(images) > 3:
-                msg = "❌ 最多支持3张参考图片"
-                logger.warning(msg)
-                yield self.create_text_message(msg)
-                return
 
-            model = tool_parameters.get("model", "qwen-image-edit-plus-2025-12-15")
+            model = tool_parameters.get("model", "qwen-image-edit-max")
             negative_prompt = tool_parameters.get("negative_prompt", "")
+            if negative_prompt:
+                negative_prompt = negative_prompt[:500]
             prompt_extend = tool_parameters.get("prompt_extend")
             watermark = tool_parameters.get("watermark")
             size = tool_parameters.get("size", "")
@@ -68,23 +68,17 @@ class QwenImage2ImageTool(Tool):
             yield self.create_text_message(
                 f"📝 提示词: {prompt[:50]}{'...' if len(prompt) > 50 else ''}"
             )
-            yield self.create_text_message(f"📷 参考图片数量: {len(images)}")
+            yield self.create_text_message("📷 参考图片数量: 1")
             yield self.create_text_message("⏳ 正在处理输入图像文件...")
 
-            processed_images: list[str] = []
-            for i, image_data in enumerate(images):
-                processed_image = self._process_image(image_data)
-                if not processed_image:
-                    msg = f"❌ 第 {i + 1} 张图像处理失败"
-                    logger.warning(msg)
-                    yield self.create_text_message(msg)
-                    return
-                processed_images.append(processed_image)
+            processed_image = self._process_image(image)
+            if not processed_image:
+                msg = "❌ 图像处理失败"
+                logger.warning(msg)
+                yield self.create_text_message(msg)
+                return
 
-            content = []
-            for img in processed_images:
-                content.append({"image": img})
-            content.append({"text": prompt})
+            content = [{"image": processed_image}, {"text": prompt}]
 
             payload: dict[str, Any] = {
                 "model": model,
@@ -94,14 +88,24 @@ class QwenImage2ImageTool(Tool):
 
             if n is not None:
                 try:
-                    payload["parameters"]["n"] = int(n)
+                    n_value = int(n)
                 except (TypeError, ValueError):
-                    pass
+                    n_value = None
+
+                if n_value is not None:
+                    if model == "qwen-image-edit":
+                        n_value = 1
+                    else:
+                        if n_value < 1:
+                            n_value = 1
+                        if n_value > 6:
+                            n_value = 6
+                    payload["parameters"]["n"] = n_value
             if negative_prompt:
                 payload["parameters"]["negative_prompt"] = negative_prompt
-            if size:
+            if size and model != "qwen-image-edit":
                 payload["parameters"]["size"] = size
-            if prompt_extend is not None:
+            if prompt_extend is not None and model != "qwen-image-edit":
                 payload["parameters"]["prompt_extend"] = bool(prompt_extend)
             if watermark is not None:
                 payload["parameters"]["watermark"] = bool(watermark)
