@@ -1,0 +1,110 @@
+identity:
+  name: "qwen_image_translate"
+  author: "sawyer-shi"
+  label:
+    en_US: "Qwen Image Translate"
+    zh_Hans: "Qwen-图片翻译"
+description:
+  human:
+    en_US: "Translate text in images using Tongyi Qwen image translation model"
+    zh_Hans: "使用通义Qwen图片翻译模型翻译图片文字"
+  llm: "Translate text in images using Tongyi Qwen image translation model"
+parameters:
+  - name: image_url
+    type: string
+    required: true
+    label:
+      en_US: Image URL
+      zh_Hans: 图片URL
+    human_description:
+      en_US: "Image URL for translation"
+      zh_Hans: "用于翻译的图片URL"
+    llm_description: "Image URL for translation"
+    form: llm
+  - name: source_lang
+    type: string
+    required: false
+    label:
+      en_US: Source Language
+      zh_Hans: 源语言
+    human_description:
+      en_US: "Source language (auto for auto-detect)"
+      zh_Hans: "源语言（auto为自动识别）"
+    llm_description: "Source language (auto for auto-detect)"
+    form: form
+    default: "auto"
+  - name: target_lang
+    type: string
+    required: true
+    label:
+      en_US: Target Language
+      zh_Hans: 目标语言
+    human_description:
+      en_US: "Target language"
+      zh_Hans: "目标语言"
+    llm_description: "Target language"
+    form: llm
+  - name: domain_hint
+    type: string
+    required: false
+    label:
+      en_US: Domain Hint
+      zh_Hans: 领域提示
+    human_description:
+      en_US: "Domain hint to improve translation"
+      zh_Hans: "领域提示，用于提升翻译效果"
+    llm_description: "Domain hint to improve translation"
+    form: form
+  - name: sensitives
+    type: string
+    required: false
+    label:
+      en_US: Sensitive Words
+      zh_Hans: 敏感词
+    human_description:
+      en_US: "Sensitive words (JSON array)"
+      zh_Hans: "敏感词（JSON数组）"
+    llm_description: "Sensitive words (JSON array)"
+    form: form
+  - name: terminologies
+    type: string
+    required: false
+    label:
+      en_US: Terminologies
+      zh_Hans: 术语表
+    human_description:
+      en_US: "Terminologies (JSON array)"
+      zh_Hans: "术语表（JSON数组）"
+    llm_description: "Terminologies (JSON array)"
+    form: form
+  - name: skip_img_segment
+    type: boolean
+    required: false
+    label:
+      en_US: Skip Image Segment
+      zh_Hans: 跳过图像分割
+    human_description:
+      en_US: "Skip image segmentation"
+      zh_Hans: "跳过图像分割"
+    llm_description: "Skip image segmentation"
+    form: form
+  - name: model
+    type: select
+    required: false
+    label:
+      en_US: Model
+      zh_Hans: 模型
+    human_description:
+      en_US: "Image translation model"
+      zh_Hans: "图片翻译模型"
+    llm_description: "Image translation model"
+    form: form
+    default: "qwen-mt-image"
+    options:
+      - value: "qwen-mt-image"
+        label:
+          en_US: "Qwen MT Image"
+          zh_Hans: "Qwen MT Image"
+extra:
+  python:
+    source: tools/qwen_image_translate.py

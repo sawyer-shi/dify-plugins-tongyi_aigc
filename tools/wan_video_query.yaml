@@ -1,0 +1,47 @@
+identity:
+  name: "wan_video_query"
+  author: "sawyer-shi"
+  label:
+    en_US: "Wan-Video Query"
+    zh_Hans: "Wan-视频结果查询"
+description:
+  human:
+    en_US: "Query the status and results of Wanxiang video tasks"
+    zh_Hans: "查询通义万相视频任务的状态和结果"
+  llm: "Query the status and results of Wanxiang video tasks"
+parameters:
+  - name: task_id
+    type: string
+    required: true
+    label:
+      en_US: Task ID
+      zh_Hans: 任务ID
+    human_description:
+      en_US: "The ID of the video task to query"
+      zh_Hans: "要查询的视频任务ID"
+    llm_description: "The ID of the video task to query"
+    form: llm
+  - name: download_video
+    type: select
+    required: false
+    label:
+      en_US: Download Video
+      zh_Hans: 下载视频
+    human_description:
+      en_US: "Download the video file when available"
+      zh_Hans: "当视频可用时下载视频文件"
+    llm_description: "Download the video file when available"
+    form: form
+    default: "false"
+    options:
+      - value: "true"
+        label:
+          en_US: "Enabled"
+          zh_Hans: "启用"
+      - value: "false"
+        label:
+          en_US: "Disabled"
+          zh_Hans: "禁用"
+extra:
+  python:
+    source: tools/wan_video_query.py

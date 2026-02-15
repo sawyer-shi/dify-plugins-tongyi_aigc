@@ -1,0 +1,41 @@
+identity:
+  author: "sawyer-shi"
+  name: "tongyi_aigc"
+  label:
+    en_US: "TongYi AIGC"
+    zh_Hans: "通义AIGC"
+  description:
+    en_US: 'TongYi AIGC: Supports full-featured image and video generation using the latest Alibaba Tongyi models (wan2.6, qwen-image-plus, qwen-image-max, wan2.5, wan2.2, and wanx2.1).'
+    zh_Hans: '通义AIGC：支持全功能系列的图片生成和视频生成，使用最新的阿里通义模型(wan2.6、qwen-image-plus、qwen-image-max以及wan2.5、wan2.2和wanx2.1)。'
+  icon: "icon.png"
+credentials_for_provider:
+  api_key:
+    help:
+      en_US: Get your Tongyi API key from Alibaba Cloud DashScope and ensure the required models are enabled.
+      zh_Hans: 从阿里云DashScope获取API Key，并确保已开通相关模型。
+    label:
+      en_US: Tongyi API Key
+      zh_Hans: Tongyi API Key
+    placeholder:
+      en_US: Please input your Tongyi API Key
+      zh_Hans: 请输入您的Tongyi API Key
+    required: true
+    type: secret-input
+    url: https://dashscope.console.aliyun.com/apiKey
+tools:
+  - tools/qwen_text_2_image.yaml
+  - tools/qwen_image_2_image.yaml
+  - tools/qwen_image_translate.yaml
+  - tools/qwen_image_translate_query.yaml
+  - tools/wan_2_6_text_2_image.yaml
+  - tools/wan_2_6_image_2_image.yaml
+  - tools/wan_2_5_image_2_image.yaml
+  - tools/wan_image_query.yaml
+  - tools/wan_text_2_video.yaml
+  - tools/wan_first_image_2_video.yaml
+  - tools/wan_first_end_image_2_video.yaml
+  - tools/wan_reference_video.yaml
+  - tools/wan_video_query.yaml
+extra:
+  python:
+    source: provider/tongyi_aigc.py

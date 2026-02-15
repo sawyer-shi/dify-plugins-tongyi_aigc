@@ -1,0 +1,26 @@
+identity:
+  name: "qwen_image_translate_query"
+  author: "sawyer-shi"
+  label:
+    en_US: "Qwen Image Translate Query"
+    zh_Hans: "Qwen-图片翻译结果查询"
+description:
+  human:
+    en_US: "Query image translation task status and results"
+    zh_Hans: "查询图片翻译任务状态和结果"
+  llm: "Query image translation task status and results"
+parameters:
+  - name: task_id
+    type: string
+    required: true
+    label:
+      en_US: Task ID
+      zh_Hans: 任务ID
+    human_description:
+      en_US: "The ID of the translation task to query"
+      zh_Hans: "要查询的翻译任务ID"
+    llm_description: "The ID of the translation task to query"
+    form: llm
+extra:
+  python:
+    source: tools/qwen_image_translate_query.py

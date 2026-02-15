@@ -1,0 +1,121 @@
+identity:
+  name: "wan_2_5_image_2_image"
+  author: "sawyer-shi"
+  label:
+    en_US: "Wan-2.5 Image to Image"
+    zh_Hans: "Wan-2.5-图生图"
+description:
+  human:
+    en_US: "Generate images from text and reference images using Tongyi Wanxiang 2.5"
+    zh_Hans: "使用通义万相2.5模型根据文本和参考图像生成图像"
+  llm: "Generate images from text and reference images using Tongyi Wanxiang 2.5"
+parameters:
+  - name: prompt
+    type: string
+    required: true
+    label:
+      en_US: Prompt
+      zh_Hans: 提示词
+    human_description:
+      en_US: "Text description of the image you want to generate"
+      zh_Hans: "您想要生成的图像的文本描述"
+    llm_description: "Text description of the image to generate"
+    form: llm
+  - name: images
+    type: array
+    required: true
+    label:
+      en_US: Reference Images
+      zh_Hans: 参考图片
+    human_description:
+      en_US: "Reference images for generation (max 3 images, <=10MB each)"
+      zh_Hans: "用于生成的参考图像（最多3张，每张<=10MB）"
+    llm_description: "Reference images to use for generation"
+    form: llm
+  - name: size
+    type: string
+    required: false
+    label:
+      en_US: Image Size
+      zh_Hans: 图像尺寸
+    human_description:
+      en_US: "Size of the generated image"
+      zh_Hans: "生成图像的尺寸"
+    llm_description: "Size of the generated image"
+    form: form
+    default: ""
+  - name: negative_prompt
+    type: string
+    required: false
+    label:
+      en_US: Negative Prompt
+      zh_Hans: 反向提示词
+    human_description:
+      en_US: "Describe what you don't want in the image"
+      zh_Hans: "描述不希望在图像中出现的内容"
+    llm_description: "Negative prompt to restrict image content"
+    form: llm
+  - name: prompt_extend
+    type: boolean
+    required: false
+    label:
+      en_US: Prompt Extend
+      zh_Hans: 提示词智能改写
+    human_description:
+      en_US: "Enable AI-powered prompt optimization"
+      zh_Hans: "启用提示词智能改写"
+    llm_description: "Whether to enable prompt intelligent rewriting"
+    form: form
+  - name: watermark
+    type: boolean
+    required: false
+    label:
+      en_US: Watermark
+      zh_Hans: 水印
+    human_description:
+      en_US: "Whether to add watermark to the image"
+      zh_Hans: "是否在图像上添加水印"
+    llm_description: "Whether to add watermark"
+    form: form
+  - name: n
+    type: number
+    required: false
+    label:
+      en_US: Image Count
+      zh_Hans: 图片数量
+    human_description:
+      en_US: "Number of images to generate"
+      zh_Hans: "生成图像数量"
+    llm_description: "Number of images to generate"
+    form: form
+  - name: seed
+    type: number
+    required: false
+    label:
+      en_US: Seed
+      zh_Hans: 随机种子
+    human_description:
+      en_US: "Random seed for reproducible results"
+      zh_Hans: "用于可重复结果的随机种子"
+    llm_description: "Random seed for reproducible results"
+    form: form
+  - name: model
+    type: select
+    required: false
+    label:
+      en_US: Model Version
+      zh_Hans: 模型版本
+    human_description:
+      en_US: "Choose the Wanxiang model version"
+      zh_Hans: "选择要使用的万相模型版本"
+    llm_description: "Choose the Wanxiang model version"
+    form: form
+    default: "wan2.5-i2i-preview"
+    options:
+      - value: "wan2.5-i2i-preview"
+        label:
+          en_US: "Wanxiang 2.5 Image"
+          zh_Hans: "万相2.5 图生图"
+extra:
+  python:
+    source: tools/wan_2_5_image_2_image.py

@@ -1,0 +1,149 @@
+identity:
+  name: "wan_first_end_image_2_video"
+  author: "sawyer-shi"
+  label:
+    en_US: "Wan-First/Last Frame to Video"
+    zh_Hans: "Wan-首尾帧图生视频"
+description:
+  human:
+    en_US: "Generate video from first and last frame images using Tongyi Wanxiang API"
+    zh_Hans: "使用通义万相API从首尾帧图片生成视频"
+  llm: "Create video from first and last frame images with customizable parameters."
+parameters:
+  - name: model
+    type: select
+    required: true
+    label:
+      en_US: "Model"
+      zh_Hans: "模型"
+    human_description:
+      en_US: "AI model to use for video generation"
+      zh_Hans: "用于视频生成的AI模型"
+    llm_description: "AI model for video generation"
+    form: form
+    default: "wan2.2-kf2v-flash"
+    options:
+      - value: "wan2.2-kf2v-flash"
+        label:
+          en_US: "Wanxiang 2.2 First/Last Frame"
+          zh_Hans: "万相2.2首尾帧"
+  - name: prompt
+    type: string
+    required: false
+    label:
+      en_US: "Prompt"
+      zh_Hans: "提示词"
+    human_description:
+      en_US: "Text description for video generation (required when not using template)"
+      zh_Hans: "视频生成的文本描述（非模板模式必填）"
+    llm_description: "Text prompt describing the video to generate"
+    form: llm
+  - name: negative_prompt
+    type: string
+    required: false
+    label:
+      en_US: "Negative Prompt"
+      zh_Hans: "反向提示词"
+    human_description:
+      en_US: "Describe what you don't want in the video"
+      zh_Hans: "描述不希望在视频中出现的内容"
+    llm_description: "Negative prompt to restrict video content"
+    form: llm
+  - name: first_frame_image
+    type: file
+    required: true
+    label:
+      en_US: "First Frame Image"
+      zh_Hans: "首帧图片"
+    human_description:
+      en_US: "Upload the first frame image"
+      zh_Hans: "上传首帧图片"
+    llm_description: "Upload the first frame image"
+    form: llm
+  - name: last_frame_image
+    type: file
+    required: false
+    label:
+      en_US: "Last Frame Image"
+      zh_Hans: "尾帧图片"
+    human_description:
+      en_US: "Upload the last frame image (required when not using template)"
+      zh_Hans: "上传尾帧图片（非模板模式必填）"
+    llm_description: "Upload the last frame image"
+    form: llm
+  - name: template
+    type: string
+    required: false
+    label:
+      en_US: "Video Effect Template"
+      zh_Hans: "视频特效模板"
+    human_description:
+      en_US: "Special effect template name for the video"
+      zh_Hans: "视频特效模板名称"
+    llm_description: "Special effect template name for the video"
+    form: form
+    default: ""
+  - name: resolution
+    type: select
+    required: false
+    label:
+      en_US: "Resolution"
+      zh_Hans: "分辨率"
+    human_description:
+      en_US: "Video resolution quality"
+      zh_Hans: "视频分辨率质量"
+    llm_description: "Video resolution quality"
+    form: form
+    default: "720P"
+    options:
+      - value: "480P"
+        label:
+          en_US: "480P"
+          zh_Hans: "480P"
+      - value: "720P"
+        label:
+          en_US: "720P"
+          zh_Hans: "720P"
+      - value: "1080P"
+        label:
+          en_US: "1080P"
+          zh_Hans: "1080P"
+  - name: prompt_extend
+    type: boolean
+    required: false
+    label:
+      en_US: "Prompt Extend"
+      zh_Hans: "提示词智能改写"
+    human_description:
+      en_US: "Enable AI-powered prompt optimization"
+      zh_Hans: "启用提示词智能改写"
+    llm_description: "Whether to enable prompt intelligent rewriting"
+    form: form
+    default: true
+  - name: watermark
+    type: boolean
+    required: false
+    label:
+      en_US: "Watermark"
+      zh_Hans: "水印"
+    human_description:
+      en_US: "Add watermark to the video"
+      zh_Hans: "在视频中添加水印"
+    llm_description: "Whether to add watermark"
+    form: form
+    default: false
+  - name: seed
+    type: number
+    required: false
+    label:
+      en_US: "Seed"
+      zh_Hans: "随机种子"
+    human_description:
+      en_US: "Random seed for reproducible results"
+      zh_Hans: "用于可重复结果的随机种子"
+    llm_description: "Random seed for reproducible results"
+    form: form
+    default: 0
+extra:
+  python:
+    source: tools/wan_first_end_image_2_video.py
