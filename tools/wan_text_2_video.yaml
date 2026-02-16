@@ -95,8 +95,8 @@ parameters:
       en_US: "Duration (seconds)"
       zh_Hans: "时长(秒)"
     human_description:
-      en_US: "Duration of the generated video in seconds"
-      zh_Hans: "生成视频的时长（秒）"
+      en_US: "Duration of the generated video in seconds. wan2.6-t2v: integer between [2, 15], default 5. wan2.6-t2v-us: 5 or 10, default 5. wan2.5-t2v-preview: 5 or 10, default 5. wan2.2-t2v-plus: fixed at 5 seconds, not modifiable. wanx2.1-t2v-plus: fixed at 5 seconds, not modifiable. wanx2.1-t2v-turbo: fixed at 5 seconds, not modifiable."
+      zh_Hans: "生成视频的时长（秒）。wan2.6-t2v：取值为[2, 15]之间的整数，默认值为5。wan2.6-t2v-us：可选值为5、10，默认值为5。wan2.5-t2v-preview：可选值为5、10，默认值为5。wan2.2-t2v-plus：固定为5秒，且不支持修改。wanx2.1-t2v-plus：固定为5秒，且不支持修改。wanx2.1-t2v-turbo：固定为5秒，且不支持修改。"
     llm_description: "Duration of the generated video in seconds"
     form: form
     default: "5"
