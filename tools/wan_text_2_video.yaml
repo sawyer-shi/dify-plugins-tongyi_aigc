@@ -7,7 +7,7 @@ identity:
 description:
   human:
     en_US: "Generate video from text using Tongyi Wanxiang API"
-    zh_Hans: "使用通义万相API从文本生成视频"
+    zh_Hans: "使用通义万相模型从文本生成视频"
   llm: "Create video from text with customizable parameters including model selection, prompt, resolution, duration, audio settings, and more."
 parameters:
   - name: model

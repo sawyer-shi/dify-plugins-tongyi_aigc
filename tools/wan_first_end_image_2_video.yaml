@@ -7,7 +7,7 @@ identity:
 description:
   human:
     en_US: "Generate video from first and last frame images using Tongyi Wanxiang API"
-    zh_Hans: "使用通义万相API从首尾帧图片生成视频"
+    zh_Hans: "使用通义万相模型从首尾帧图片生成视频"
   llm: "Create video from first and last frame images with customizable parameters."
 parameters:
   - name: model

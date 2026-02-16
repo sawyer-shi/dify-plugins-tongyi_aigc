@@ -7,7 +7,7 @@ identity:
 description:
   human:
     en_US: "Generate video from an image using Tongyi Wanxiang API"
-    zh_Hans: "使用通义万相API从图片生成视频"
+    zh_Hans: "使用通义万相模型从图片生成视频"
   llm: "Create video from image with customizable parameters including model selection, prompt, image input, and more."
 parameters:
   - name: model

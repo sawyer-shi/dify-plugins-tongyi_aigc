@@ -7,7 +7,7 @@ identity:
 description:
   human:
     en_US: "Generate video from reference videos using Tongyi Wanxiang API"
-    zh_Hans: "使用通义万相API从参考视频生成新视频"
+    zh_Hans: "使用通义万相模型从参考视频生成新视频"
   llm: "Create video from reference videos with customizable parameters including model selection, prompt, reference videos, shot type, and more."
 parameters:
   - name: model
@@ -27,6 +27,10 @@ parameters:
         label:
           en_US: "Wanxiang 2.6 Reference to Video"
           zh_Hans: "万相2.6参考生视频"
+      - value: "wan2.6-r2v-flash"
+        label:
+          en_US: "Wanxiang 2.6 Reference to Video Flash"
+          zh_Hans: "万相2.6参考生视频闪速"
   - name: prompt
     type: string
     required: true
@@ -49,19 +53,19 @@ parameters:
       zh_Hans: "描述不希望在视频中出现的内容"
     llm_description: "Negative prompt to restrict video content"
     form: llm
-  - name: reference_videos
+  - name: reference_urls
     type: string
     required: true
     label:
-      en_US: "Reference Videos"
-      zh_Hans: "参考视频"
+      en_US: "Reference URLs"
+      zh_Hans: "参考文件URL"
     human_description:
-      en_US: "Reference video URLs separated by semicolons"
-      zh_Hans: "参考视频URL，用分号分隔"
-    llm_description: "Reference video URLs separated by semicolons"
+      en_US: "Reference URLs (videos or images) separated by semicolons, max 5"
+      zh_Hans: "参考文件URL（视频或图片），用分号分隔，最多5个"
+    llm_description: "Reference URLs (videos or images) separated by semicolons"
     form: llm
   - name: size
-    type: string
+    type: select
     required: false
     label:
       en_US: "Resolution"
@@ -72,18 +76,61 @@ parameters:
     llm_description: "Video resolution in width*height format"
     form: form
     default: "1920*1080"
+    options:
+      - value: "1280*720"
+        label:
+          en_US: "1280*720 - 720P (16:9)"
+          zh_Hans: "1280*720 - 720P (16:9)"
+      - value: "720*1280"
+        label:
+          en_US: "720*1280 - 720P (9:16)"
+          zh_Hans: "720*1280 - 720P (9:16)"
+      - value: "960*960"
+        label:
+          en_US: "960*960 - 720P (1:1)"
+          zh_Hans: "960*960 - 720P (1:1)"
+      - value: "1088*832"
+        label:
+          en_US: "1088*832 - 720P (4:3)"
+          zh_Hans: "1088*832 - 720P (4:3)"
+      - value: "832*1088"
+        label:
+          en_US: "832*1088 - 720P (3:4)"
+          zh_Hans: "832*1088 - 720P (3:4)"
+      - value: "1920*1080"
+        label:
+          en_US: "1920*1080 - 1080P (16:9)"
+          zh_Hans: "1920*1080 - 1080P (16:9)"
+      - value: "1080*1920"
+        label:
+          en_US: "1080*1920 - 1080P (9:16)"
+          zh_Hans: "1080*1920 - 1080P (9:16)"
+      - value: "1440*1440"
+        label:
+          en_US: "1440*1440 - 1080P (1:1)"
+          zh_Hans: "1440*1440 - 1080P (1:1)"
+      - value: "1632*1248"
+        label:
+          en_US: "1632*1248 - 1080P (4:3)"
+          zh_Hans: "1632*1248 - 1080P (4:3)"
+      - value: "1248*1632"
+        label:
+          en_US: "1248*1632 - 1080P (3:4)"
+          zh_Hans: "1248*1632 - 1080P (3:4)"
   - name: duration
-    type: string
+    type: number
     required: false
     label:
       en_US: "Duration (seconds)"
       zh_Hans: "时长(秒)"
     human_description:
-      en_US: "Duration of the generated video in seconds"
-      zh_Hans: "生成视频的时长（秒）"
-    llm_description: "Duration of the generated video in seconds"
+      en_US: "Duration of the generated video in seconds (2-10)"
+      zh_Hans: "生成视频的时长（秒，2-10）"
+    llm_description: "Duration of the generated video in seconds (2-10)"
     form: form
     default: "5"
+    min: 2
+    max: 10
   - name: shot_type
     type: select
     required: false
@@ -112,9 +159,9 @@ parameters:
       en_US: "Auto Audio"
       zh_Hans: "自动音频"
     human_description:
-      en_US: "Automatically add audio to the generated video"
-      zh_Hans: "为生成的视频自动添加音频"
-    llm_description: "Whether to automatically add audio"
+      en_US: "Automatically add audio to the generated video (wan2.6-r2v-flash only)"
+      zh_Hans: "为生成的视频自动添加音频（仅wan2.6-r2v-flash支持）"
+    llm_description: "Whether to automatically add audio (wan2.6-r2v-flash only)"
     form: form
     default: true
   - name: watermark

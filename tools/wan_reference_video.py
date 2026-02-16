@@ -29,27 +29,27 @@ class WanReferenceVideoTool(Tool):
                 yield self.create_text_message(msg)
                 return
 
-            reference_videos_str = tool_parameters.get("reference_videos", "").strip()
-            if not reference_videos_str:
-                yield self.create_text_message("❌ 请提供参考视频")
+            reference_urls_str = tool_parameters.get("reference_urls", "").strip()
+            if not reference_urls_str:
+                yield self.create_text_message("❌ 请提供参考文件URL")
                 return
 
-            reference_videos = [
+            reference_urls = [
                 url.strip()
-                for url in reference_videos_str.split(";")
+                for url in reference_urls_str.split(";")
                 if url.strip()
             ]
-            if len(reference_videos) > 3:
-                yield self.create_text_message("❌ 最多支持3个参考视频")
+            if len(reference_urls) > 5:
+                yield self.create_text_message("❌ 最多支持5个参考文件")
                 return
 
-            processed_videos: list[str] = []
-            for video_url in reference_videos:
-                processed_video = self._process_video(video_url)
-                if not processed_video:
-                    yield self.create_text_message(f"❌ 无效的视频: {video_url}")
+            processed_urls: list[str] = []
+            for ref_url in reference_urls:
+                processed_url = self._process_video(ref_url)
+                if not processed_url:
+                    yield self.create_text_message(f"❌ 无效的参考URL: {ref_url}")
                     return
-                processed_videos.append(processed_video)
+                processed_urls.append(processed_url)
 
             prompt = tool_parameters.get("prompt", "").strip()
             if not prompt:
@@ -59,7 +59,7 @@ class WanReferenceVideoTool(Tool):
             payload: dict[str, Any] = {
                 "model": model,
                 "input": {
-                    "reference_video_urls": processed_videos,
+                    "reference_urls": processed_urls,
                     "prompt": prompt[:1500],
                 },
                 "parameters": {},
@@ -76,19 +76,25 @@ class WanReferenceVideoTool(Tool):
             duration = tool_parameters.get("duration", 5)
             if duration is not None:
                 try:
-                    params["duration"] = int(duration)
+                    duration_value = int(duration)
+                    if duration_value < 2:
+                        duration_value = 2
+                    if duration_value > 10:
+                        duration_value = 10
+                    params["duration"] = duration_value
                 except (TypeError, ValueError):
                     pass
             shot_type = tool_parameters.get("shot_type", "single").strip()
             if shot_type:
                 params["shot_type"] = shot_type
-            if tool_parameters.get("audio") is not None:
+            if tool_parameters.get("audio") is not None and model == "wan2.6-r2v-flash":
                 params["audio"] = tool_parameters.get("audio")
             if tool_parameters.get("watermark") is not None:
                 params["watermark"] = tool_parameters.get("watermark")
-            if tool_parameters.get("seed") is not None:
+            seed = tool_parameters.get("seed")
+            if seed is not None:
                 try:
-                    params["seed"] = int(tool_parameters.get("seed"))
+                    params["seed"] = int(seed)
                 except (TypeError, ValueError):
                     pass
 
@@ -100,9 +106,9 @@ class WanReferenceVideoTool(Tool):
             }
 
             debug_payload = json.loads(json.dumps(payload))
-            for i, url in enumerate(debug_payload["input"]["reference_video_urls"]):
+            for i, url in enumerate(debug_payload["input"]["reference_urls"]):
                 if len(url) > 200:
-                    debug_payload["input"]["reference_video_urls"][
+                    debug_payload["input"]["reference_urls"][
                         i
                     ] = "data:video/...[Base64 Hidden]"
             logger.info("Request Payload: %s", json.dumps(debug_payload, ensure_ascii=False))
@@ -176,9 +182,9 @@ class WanReferenceVideoTool(Tool):
             return video_data.strip()
 
         video_bytes = None
-        if hasattr(video_data, "blob"):
+        if not isinstance(video_data, str) and hasattr(video_data, "blob"):
             video_bytes = video_data.blob
-        elif hasattr(video_data, "read"):
+        elif not isinstance(video_data, str) and hasattr(video_data, "read"):
             video_bytes = video_data.read()
         elif isinstance(video_data, bytes):
             video_bytes = video_data
