@@ -1,0 +1,191 @@
+identity:
+  name: "wan_image_2_image"
+  author: "sawyer-shi"
+  label:
+    en_US: "Wan-Image to Image"
+    zh_Hans: "Wan-图生图"
+description:
+  human:
+    en_US: "Generate images from text and a reference image using Tongyi Wanxiang"
+    zh_Hans: "使用通义万相模型根据文本和参考图像生成图像"
+  llm: "Generate images from text and a reference image using Tongyi Wanxiang"
+parameters:
+  - name: model
+    type: select
+    required: true
+    label:
+      en_US: Model
+      zh_Hans: 模型
+    human_description:
+      en_US: "AI model to use for image generation"
+      zh_Hans: "用于图生图的AI模型"
+    llm_description: "AI model for image generation"
+    form: form
+    default: "wan2.6-image"
+    options:
+      - value: "wan2.6-image"
+        label:
+          en_US: "Wanxiang 2.6 Image"
+          zh_Hans: "万相2.6 图生图"
+  - name: prompt
+    type: string
+    required: true
+    label:
+      en_US: Prompt
+      zh_Hans: 提示词
+    human_description:
+      en_US: "Text description of the image you want to generate (<=2000 chars)"
+      zh_Hans: "您想要生成的图像的文本描述（<=2000字符）"
+    llm_description: "Text description of the image to generate"
+    form: llm
+  - name: image
+    type: file
+    required: true
+    label:
+      en_US: Reference Image File
+      zh_Hans: 参考图片文件
+    human_description:
+      en_US: "Reference image file for generation (<=10MB)"
+      zh_Hans: "用于生成的参考图片文件（<=10MB）"
+    llm_description: "Reference image file to use for generation"
+    form: llm
+  - name: size
+    type: select
+    required: false
+    label:
+      en_US: Image Size
+      zh_Hans: 图像尺寸
+    human_description:
+      en_US: "Size of the generated image"
+      zh_Hans: "生成图像的尺寸"
+    llm_description: "Size of the generated image"
+    form: form
+    default: "1280*1280"
+    options:
+      - value: "1280*1280"
+        label:
+          en_US: "1:1 (1280*1280)"
+          zh_Hans: "1:1 (1280*1280)"
+      - value: "1024*1024"
+        label:
+          en_US: "1:1 (1024*1024)"
+          zh_Hans: "1:1 (1024*1024)"
+      - value: "800*1200"
+        label:
+          en_US: "2:3 (800*1200)"
+          zh_Hans: "2:3 (800*1200)"
+      - value: "1200*800"
+        label:
+          en_US: "3:2 (1200*800)"
+          zh_Hans: "3:2 (1200*800)"
+      - value: "960*1280"
+        label:
+          en_US: "3:4 (960*1280)"
+          zh_Hans: "3:4 (960*1280)"
+      - value: "1280*960"
+        label:
+          en_US: "4:3 (1280*960)"
+          zh_Hans: "4:3 (1280*960)"
+      - value: "720*1280"
+        label:
+          en_US: "9:16 (720*1280)"
+          zh_Hans: "9:16 (720*1280)"
+      - value: "1280*720"
+        label:
+          en_US: "16:9 (1280*720)"
+          zh_Hans: "16:9 (1280*720)"
+      - value: "1344*576"
+        label:
+          en_US: "21:9 (1344*576)"
+          zh_Hans: "21:9 (1344*576)"
+  - name: negative_prompt
+    type: string
+    required: false
+    label:
+      en_US: Negative Prompt
+      zh_Hans: 反向提示词
+    human_description:
+      en_US: "Describe what you don't want in the image (<=500 chars)"
+      zh_Hans: "描述不希望在图像中出现的内容（<=500字符）"
+    llm_description: "Negative prompt to restrict image content"
+    form: llm
+  - name: n
+    type: number
+    required: false
+    label:
+      en_US: Image Count
+      zh_Hans: 图片数量
+    human_description:
+      en_US: "Number of images to generate (1-4)"
+      zh_Hans: "生成图像数量（1-4）"
+    llm_description: "Number of images to generate (1-4)"
+    form: form
+    default: 3
+    min: 1
+    max: 4
+  - name: enable_interleave
+    type: boolean
+    required: false
+    label:
+      en_US: Enable Interleave
+      zh_Hans: 交错输出
+    human_description:
+      en_US: "Enable interleaved text and image output"
+      zh_Hans: "启用图文混排输出"
+    llm_description: "Enable interleaved text and image output"
+    form: form
+    default: false
+  - name: max_images
+    type: number
+    required: false
+    label:
+      en_US: Max Images
+      zh_Hans: 最大图片数
+    human_description:
+      en_US: "Maximum images in interleave mode (1-5)"
+      zh_Hans: "交错输出模式下最大图片数（1-5）"
+    llm_description: "Maximum images in interleave mode"
+    form: form
+    default: 5
+    min: 1
+    max: 5
+  - name: prompt_extend
+    type: boolean
+    required: false
+    label:
+      en_US: Prompt Extend
+      zh_Hans: 提示词智能改写
+    human_description:
+      en_US: "Enable AI-powered prompt optimization"
+      zh_Hans: "启用提示词智能改写"
+    llm_description: "Whether to enable prompt intelligent rewriting"
+    form: form
+    default: true
+  - name: watermark
+    type: boolean
+    required: false
+    label:
+      en_US: Watermark
+      zh_Hans: 水印
+    human_description:
+      en_US: "Whether to add watermark to the image"
+      zh_Hans: "是否在图像上添加水印"
+    llm_description: "Whether to add watermark"
+    form: form
+    default: true
+  - name: seed
+    type: number
+    required: false
+    label:
+      en_US: Seed
+      zh_Hans: 随机种子
+    human_description:
+      en_US: "Random seed for reproducible results"
+      zh_Hans: "用于可重复结果的随机种子"
+    llm_description: "Random seed for reproducible results"
+    form: form
+    min: 0
+    max: 2147483647
+extra:
+  python:
+    source: tools/wan_image_2_image.py

@@ -29,9 +29,7 @@ tools:
   - tools/qwen_image_translate.yaml
   - tools/qwen_image_translate_query.yaml
   - tools/wan_text_2_image.yaml
-  - tools/wan_2_6_image_2_image.yaml
-  - tools/wan_2_5_image_2_image.yaml
-  - tools/wan_image_query.yaml
+  - tools/wan_image_2_image.yaml
   - tools/wan_text_2_video.yaml
   - tools/wan_first_image_2_video.yaml
   - tools/wan_first_end_image_2_video.yaml

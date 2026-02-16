@@ -15,12 +15,12 @@ from PIL import Image
 logger = logging.getLogger(__name__)
 
 
-class Wan2_5Image2ImageTool(Tool):
+class WanImage2ImageTool(Tool):
     def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage]:
         """
-        Tongyi Wanxiang 2.5 image-to-image tool (async submit).
+        Tongyi Wanxiang image-to-image tool (sync).
         """
-        logger.info("Starting wan2.5 image-to-image task")
+        logger.info("Starting wan image-to-image task")
 
         try:
             api_key = self.runtime.credentials.get("api_key")
@@ -30,11 +30,13 @@ class Wan2_5Image2ImageTool(Tool):
                 yield self.create_text_message(msg)
                 return
 
-            api_url = "https://dashscope.aliyuncs.com/api/v1/services/aigc/image2image/image-synthesis"
+            api_url = (
+                "https://dashscope.aliyuncs.com/api/v1/services/aigc/"
+                "multimodal-generation/generation"
+            )
             headers = {
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
-                "X-DashScope-Async": "enable",
             }
 
             prompt = tool_parameters.get("prompt", "").strip()
@@ -44,71 +46,90 @@ class Wan2_5Image2ImageTool(Tool):
                 yield self.create_text_message(msg)
                 return
 
-            images = tool_parameters.get("images", [])
-            if not images or not isinstance(images, list):
+            if len(prompt) > 2000:
+                prompt = prompt[:2000]
+
+            image = tool_parameters.get("image")
+            if not image:
                 msg = "❌ 请提供参考图像"
                 logger.warning(msg)
                 yield self.create_text_message(msg)
                 return
-            if len(images) > 3:
-                msg = "❌ 最多支持3张参考图片"
+
+            processed_image = self._process_image(image)
+            if not processed_image:
+                msg = "❌ 图像处理失败"
                 logger.warning(msg)
                 yield self.create_text_message(msg)
                 return
 
-            model = tool_parameters.get("model", "wan2.5-i2i-preview")
+            model = tool_parameters.get("model", "wan2.6-image")
             negative_prompt = tool_parameters.get("negative_prompt", "")
+            if negative_prompt:
+                negative_prompt = negative_prompt[:500]
             prompt_extend = tool_parameters.get("prompt_extend")
             watermark = tool_parameters.get("watermark")
             n = tool_parameters.get("n")
-            size = tool_parameters.get("size", "")
+            size = tool_parameters.get("size", "1280*1280")
             seed = tool_parameters.get("seed")
+            enable_interleave = tool_parameters.get("enable_interleave")
+            max_images = tool_parameters.get("max_images")
+
+            if not size:
+                size = "1280*1280"
+
+            content = [{"text": prompt}, {"image": processed_image}]
+
+            payload: dict[str, Any] = {
+                "model": model,
+                "input": {"messages": [{"role": "user", "content": content}]},
+                "parameters": {},
+            }
+
+            if negative_prompt:
+                payload["parameters"]["negative_prompt"] = negative_prompt
+            if prompt_extend is not None:
+                payload["parameters"]["prompt_extend"] = prompt_extend
+            if watermark is not None:
+                payload["parameters"]["watermark"] = watermark
+            if enable_interleave is not None:
+                payload["parameters"]["enable_interleave"] = enable_interleave
+
+            if n is not None:
+                try:
+                    n_value = int(n)
+                except (TypeError, ValueError):
+                    n_value = None
+                if n_value is not None:
+                    if enable_interleave:
+                        n_value = 1
+                    else:
+                        if n_value < 1:
+                            n_value = 1
+                        if n_value > 4:
+                            n_value = 4
+                    payload["parameters"]["n"] = n_value
+
+            payload["parameters"]["size"] = size
+            if max_images is not None:
+                try:
+                    payload["parameters"]["max_images"] = int(max_images)
+                except (TypeError, ValueError):
+                    pass
+            if seed is not None:
+                try:
+                    payload["parameters"]["seed"] = int(seed)
+                except (TypeError, ValueError):
+                    pass
 
             yield self.create_text_message("🚀 图生图任务启动中...")
             yield self.create_text_message(f"🤖 使用模型: {model}")
             yield self.create_text_message(
                 f"📝 提示词: {prompt[:50]}{'...' if len(prompt) > 50 else ''}"
             )
-            yield self.create_text_message(f"📷 参考图片数量: {len(images)}")
-            yield self.create_text_message("⏳ 正在处理输入图像文件...")
-
-            processed_images: list[str] = []
-            for i, image_data in enumerate(images):
-                processed_image = self._process_image(image_data)
-                if not processed_image:
-                    msg = f"❌ 第 {i + 1} 张图像处理失败"
-                    logger.warning(msg)
-                    yield self.create_text_message(msg)
-                    return
-                processed_images.append(processed_image)
-
-            payload: dict[str, Any] = {
-                "model": model,
-                "input": {
-                    "prompt": prompt,
-                    "images": processed_images,
-                },
-                "parameters": {},
-            }
-
-            if negative_prompt:
-                payload["input"]["negative_prompt"] = negative_prompt.strip()
-            if prompt_extend is not None:
-                payload["parameters"]["prompt_extend"] = prompt_extend
-            if watermark is not None:
-                payload["parameters"]["watermark"] = watermark
-            if n is not None:
-                try:
-                    payload["parameters"]["n"] = int(n)
-                except (TypeError, ValueError):
-                    pass
-            if size:
-                payload["parameters"]["size"] = size
-            if seed is not None:
-                try:
-                    payload["parameters"]["seed"] = int(seed)
-                except (TypeError, ValueError):
-                    pass
+            yield self.create_text_message("📷 参考图片数量: 1")
+            yield self.create_text_message(f"📐 图像尺寸: {size}")
+            yield self.create_text_message("⏳ 正在连接通义API...")
 
             logger.info("Submitting request: %s", json.dumps(payload, ensure_ascii=False))
 
@@ -144,9 +165,43 @@ class Wan2_5Image2ImageTool(Tool):
                 yield self.create_text_message("❌ API 响应解析失败（非JSON）")
                 return
 
-            yield self.create_text_message(self._format_response_text(resp_data))
-            yield self.create_json_message(resp_data)
-            logger.info("Wan2.5 image-to-image task submitted")
+            output = resp_data.get("output", {})
+            choices = output.get("choices", [])
+            if not choices:
+                yield self.create_text_message("❌ API 响应中未返回图像数据")
+                return
+
+            yield self.create_text_message("🎉 图像生成成功！")
+
+            image_index = 0
+            for choice in choices:
+                message = choice.get("message", {})
+                content_items = message.get("content", [])
+                for item in content_items:
+                    if (
+                        isinstance(item, dict)
+                        and item.get("type") == "image"
+                        and "image" in item
+                    ):
+                        image_index += 1
+                        yield self.create_image_message(item["image"])
+                        yield self.create_text_message(f"✅ 第 {image_index} 张图片生成完成！")
+
+            usage = resp_data.get("usage", {})
+            if usage:
+                if isinstance(usage, dict):
+                    yield self.create_text_message("📊 使用统计:")
+                    for key, value in usage.items():
+                        yield self.create_text_message(f"  - {key}: {value}")
+                else:
+                    try:
+                        usage_text = json.dumps(usage, ensure_ascii=False)
+                    except Exception:
+                        usage_text = str(usage)
+                    yield self.create_text_message(f"📊 使用信息: {usage_text}")
+
+            yield self.create_text_message("🎯 图生图任务完成！")
+            logger.info("Wan image-to-image task completed")
 
         except Exception as e:
             error_msg = f"❌ 生成图像时出现未预期错误: {str(e)}"
@@ -200,9 +255,6 @@ class Wan2_5Image2ImageTool(Tool):
                 return ""
             if image.width > 5000 or image.height > 5000:
                 return ""
-            aspect_ratio = image.width / image.height
-            if aspect_ratio > 4 or aspect_ratio < 0.25:
-                return ""
 
             if image.mode == "RGBA":
                 background = Image.new("RGB", image.size, (255, 255, 255))
@@ -212,49 +264,11 @@ class Wan2_5Image2ImageTool(Tool):
                 image = image.convert("RGB")
 
             output_buffer = BytesIO()
-            image.save(output_buffer, format="JPEG", quality=85, optimize=True)
+            image.save(output_buffer, format="PNG", optimize=True)
             processed_bytes = output_buffer.getvalue()
 
             base64_string = base64.b64encode(processed_bytes).decode("utf-8")
-            return f"data:image/jpeg;base64,{base64_string}"
+            return f"data:image/png;base64,{base64_string}"
         except Exception as e:
             logger.error("Error processing image: %s", str(e))
             return ""
-
-    @staticmethod
-    def _format_response_text(result_data: dict[str, Any]) -> str:
-        request_id = result_data.get("request_id", "unknown")
-        output = result_data.get("output", {})
-        task_id = output.get("task_id", "unknown")
-        task_status = output.get("task_status", "unknown")
-
-        input_data = result_data.get("input", {})
-        prompt = input_data.get("prompt", "unknown")
-        images = input_data.get("images", [])
-        image_count = len(images)
-        model = input_data.get("model", "wan2.5-i2i-preview")
-
-        response_text = f"""
-🎨 Wanxiang V2.5 图像编辑任务已提交！
-
-📋 任务详情:
-   • 任务ID: {task_id}
-   • 状态: {task_status}
-   • 模型: {model}
-   • 参考图片数量: {image_count}
-
-📝 Prompt: {prompt}
-
-💡 Next Steps:
-   • Use the Wanxiang V2.5 Image Query tool to check progress
-   • Task ID: {task_id}
-   • Status will update from 'PENDING' → 'RUNNING' → 'SUCCEEDED'/'FAILED'
-
-📊 API Response Summary:
-   • Request ID: {request_id}
-   • Endpoint: /api/v1/services/aigc/image2image/image-synthesis
-   • Method: POST
-   • Status: Success (200)
-   • Task Status: {task_status}
-"""
-        return response_text.strip()
