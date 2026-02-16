@@ -49,19 +49,27 @@ class WanImage2ImageTool(Tool):
             if len(prompt) > 2000:
                 prompt = prompt[:2000]
 
-            image = tool_parameters.get("image")
-            if not image:
+            images = tool_parameters.get("images", [])
+            if not images or not isinstance(images, list):
                 msg = "❌ 请提供参考图像"
                 logger.warning(msg)
                 yield self.create_text_message(msg)
                 return
-
-            processed_image = self._process_image(image)
-            if not processed_image:
-                msg = "❌ 图像处理失败"
+            if len(images) > 4:
+                msg = "❌ 最多支持4张参考图片"
                 logger.warning(msg)
                 yield self.create_text_message(msg)
                 return
+
+            processed_images: list[str] = []
+            for i, image_data in enumerate(images):
+                processed_image = self._process_image(image_data)
+                if not processed_image:
+                    msg = f"❌ 第 {i + 1} 张图像处理失败"
+                    logger.warning(msg)
+                    yield self.create_text_message(msg)
+                    return
+                processed_images.append(processed_image)
 
             model = tool_parameters.get("model", "wan2.6-image")
             negative_prompt = tool_parameters.get("negative_prompt", "")
@@ -78,7 +86,7 @@ class WanImage2ImageTool(Tool):
             if not size:
                 size = "1280*1280"
 
-            content = [{"text": prompt}, {"image": processed_image}]
+            content = [{"text": prompt}] + [{"image": img} for img in processed_images]
 
             payload: dict[str, Any] = {
                 "model": model,
@@ -127,7 +135,7 @@ class WanImage2ImageTool(Tool):
             yield self.create_text_message(
                 f"📝 提示词: {prompt[:50]}{'...' if len(prompt) > 50 else ''}"
             )
-            yield self.create_text_message("📷 参考图片数量: 1")
+            yield self.create_text_message(f"📷 参考图片数量: {len(processed_images)}")
             yield self.create_text_message(f"📐 图像尺寸: {size}")
             yield self.create_text_message("⏳ 正在连接通义API...")
 

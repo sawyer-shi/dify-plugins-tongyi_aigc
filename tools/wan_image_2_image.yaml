@@ -38,16 +38,16 @@ parameters:
       zh_Hans: "您想要生成的图像的文本描述（<=2000字符）"
     llm_description: "Text description of the image to generate"
     form: llm
-  - name: image
-    type: file
+  - name: images
+    type: files
     required: true
     label:
-      en_US: Reference Image File
-      zh_Hans: 参考图片文件
+      en_US: Reference Image Files (1-4)
+      zh_Hans: 参考图片文件(1-4张)
     human_description:
-      en_US: "Reference image file for generation (<=10MB)"
-      zh_Hans: "用于生成的参考图片文件（<=10MB）"
-    llm_description: "Reference image file to use for generation"
+      en_US: "Reference image files for generation (1-4 images, <=10MB each)"
+      zh_Hans: "用于生成的参考图片文件（1-4张，每张<=10MB）"
+    llm_description: "Reference image files to use for generation"
     form: llm
   - name: size
     type: select

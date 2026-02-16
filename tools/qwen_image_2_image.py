@@ -46,9 +46,14 @@ class QwenImage2ImageTool(Tool):
             if len(prompt) > 800:
                 prompt = prompt[:800]
 
-            image = tool_parameters.get("image")
-            if not image:
+            images = tool_parameters.get("images", [])
+            if not images or not isinstance(images, list):
                 msg = "❌ 请提供参考图像"
+                logger.warning(msg)
+                yield self.create_text_message(msg)
+                return
+            if len(images) > 3:
+                msg = "❌ 最多支持3张参考图片"
                 logger.warning(msg)
                 yield self.create_text_message(msg)
                 return
@@ -68,17 +73,20 @@ class QwenImage2ImageTool(Tool):
             yield self.create_text_message(
                 f"📝 提示词: {prompt[:50]}{'...' if len(prompt) > 50 else ''}"
             )
-            yield self.create_text_message("📷 参考图片数量: 1")
+            yield self.create_text_message(f"📷 参考图片数量: {len(images)}")
             yield self.create_text_message("⏳ 正在处理输入图像文件...")
 
-            processed_image = self._process_image(image)
-            if not processed_image:
-                msg = "❌ 图像处理失败"
-                logger.warning(msg)
-                yield self.create_text_message(msg)
-                return
+            processed_images: list[str] = []
+            for i, image_data in enumerate(images):
+                processed_image = self._process_image(image_data)
+                if not processed_image:
+                    msg = f"❌ 第 {i + 1} 张图像处理失败"
+                    logger.warning(msg)
+                    yield self.create_text_message(msg)
+                    return
+                processed_images.append(processed_image)
 
-            content = [{"image": processed_image}, {"text": prompt}]
+            content = [{"image": img} for img in processed_images] + [{"text": prompt}]
 
             payload: dict[str, Any] = {
                 "model": model,
