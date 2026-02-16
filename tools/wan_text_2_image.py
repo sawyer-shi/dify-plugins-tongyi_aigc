@@ -12,12 +12,12 @@ from dify_plugin.entities.tool import ToolInvokeMessage
 logger = logging.getLogger(__name__)
 
 
-class Wan2_6Text2ImageTool(Tool):
+class WanText2ImageTool(Tool):
     def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage]:
         """
-        Tongyi Wanxiang 2.6 text-to-image tool (sync).
+        Tongyi Wanxiang text-to-image tool (sync for wan2.6).
         """
-        logger.info("Starting wan2.6 text-to-image task")
+        logger.info("Starting wan text-to-image task")
 
         try:
             api_key = self.runtime.credentials.get("api_key")
@@ -27,7 +27,10 @@ class Wan2_6Text2ImageTool(Tool):
                 yield self.create_text_message(msg)
                 return
 
-            api_url = "https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation"
+            api_url = (
+                "https://dashscope.aliyuncs.com/api/v1/services/aigc/"
+                "multimodal-generation/generation"
+            )
             headers = {
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
@@ -40,21 +43,28 @@ class Wan2_6Text2ImageTool(Tool):
                 yield self.create_text_message(msg)
                 return
 
-            model = tool_parameters.get("model", "wan2.6-t2i")
+            if len(prompt) > 2100:
+                prompt = prompt[:2100]
+
+            model = "wan2.6-t2i"
             negative_prompt = tool_parameters.get("negative_prompt", "")
+            if negative_prompt:
+                negative_prompt = negative_prompt[:500]
             prompt_extend = tool_parameters.get("prompt_extend")
             watermark = tool_parameters.get("watermark")
             n = tool_parameters.get("n")
-            size = tool_parameters.get("size", "")
+            size = tool_parameters.get("size", "1280*1280")
             seed = tool_parameters.get("seed")
 
+            if not size:
+                size = "1280*1280"
+
             yield self.create_text_message("🚀 文生图任务启动中...")
-            yield self.create_text_message(f"🤖 使用模型: {model}")
+            yield self.create_text_message("🤖 使用模型: wan2.6-t2i")
             yield self.create_text_message(
                 f"📝 提示词: {prompt[:50]}{'...' if len(prompt) > 50 else ''}"
             )
-            if size:
-                yield self.create_text_message(f"📐 图像尺寸: {size}")
+            yield self.create_text_message(f"📐 图像尺寸: {size}")
             yield self.create_text_message("⏳ 正在连接通义API...")
 
             payload: dict[str, Any] = {
@@ -73,18 +83,23 @@ class Wan2_6Text2ImageTool(Tool):
             }
 
             if negative_prompt:
-                payload["parameters"]["negative_prompt"] = negative_prompt.strip()
+                payload["parameters"]["negative_prompt"] = negative_prompt
             if prompt_extend is not None:
                 payload["parameters"]["prompt_extend"] = prompt_extend
             if watermark is not None:
                 payload["parameters"]["watermark"] = watermark
             if n is not None:
                 try:
-                    payload["parameters"]["n"] = int(n)
+                    n_value = int(n)
                 except (TypeError, ValueError):
-                    pass
-            if size:
-                payload["parameters"]["size"] = size
+                    n_value = None
+                if n_value is not None:
+                    if n_value < 1:
+                        n_value = 1
+                    if n_value > 4:
+                        n_value = 4
+                    payload["parameters"]["n"] = n_value
+            payload["parameters"]["size"] = size
             if seed is not None:
                 try:
                     payload["parameters"]["seed"] = int(seed)
@@ -139,7 +154,11 @@ class Wan2_6Text2ImageTool(Tool):
                 message = choice.get("message", {})
                 content = message.get("content", [])
                 for item in content:
-                    if isinstance(item, dict) and item.get("type") == "image" and "image" in item:
+                    if (
+                        isinstance(item, dict)
+                        and item.get("type") == "image"
+                        and "image" in item
+                    ):
                         image_index += 1
                         yield self.create_image_message(item["image"])
                         yield self.create_text_message(f"✅ 第 {image_index} 张图片生成完成！")
@@ -158,7 +177,7 @@ class Wan2_6Text2ImageTool(Tool):
                     yield self.create_text_message(f"📊 使用信息: {usage_text}")
 
             yield self.create_text_message("🎯 文生图任务完成！")
-            logger.info("Wan2.6 text-to-image task completed")
+            logger.info("Wan text-to-image task completed")
 
         except Exception as e:
             error_msg = f"❌ 生成图像时出现未预期错误: {str(e)}"
