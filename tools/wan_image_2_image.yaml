@@ -21,8 +21,16 @@ parameters:
       zh_Hans: "用于图生图的AI模型"
     llm_description: "AI model for image generation"
     form: form
-    default: "wan2.6-image"
+    default: "wan2.7-image-pro"
     options:
+      - value: "wan2.7-image-pro"
+        label:
+          en_US: "Wanxiang 2.7 Image Pro"
+          zh_Hans: "万相2.7 图像专业版"
+      - value: "wan2.7-image"
+        label:
+          en_US: "Wanxiang 2.7 Image"
+          zh_Hans: "万相2.7 图像"
       - value: "wan2.6-image"
         label:
           en_US: "Wanxiang 2.6 Image"
@@ -34,19 +42,19 @@ parameters:
       en_US: Prompt
       zh_Hans: 提示词
     human_description:
-      en_US: "Text description of the image you want to generate (<=2000 chars)"
-      zh_Hans: "您想要生成的图像的文本描述（<=2000字符）"
+      en_US: "Text description of the image you want to generate (<=5000 chars)"
+      zh_Hans: "您想要生成的图像的文本描述（<=5000字符）"
     llm_description: "Text description of the image to generate"
     form: llm
   - name: images
     type: files
     required: true
     label:
-      en_US: Reference Image Files (1-4)
-      zh_Hans: 参考图片文件(1-4张)
+      en_US: Reference Image Files (1-9)
+      zh_Hans: 参考图片文件(1-9张)
     human_description:
-      en_US: "Reference image files for generation (1-4 images, <=10MB each)"
-      zh_Hans: "用于生成的参考图片文件（1-4张，每张<=10MB）"
+      en_US: "Reference image files for generation (1-9 images, <=20MB each)"
+      zh_Hans: "用于生成的参考图片文件（1-9张，每张<=20MB）"
     llm_description: "Reference image files to use for generation"
     form: llm
   - name: size
@@ -60,8 +68,16 @@ parameters:
       zh_Hans: "生成图像的尺寸"
     llm_description: "Size of the generated image"
     form: form
-    default: "1280*1280"
+    default: "2K"
     options:
+      - value: "2K"
+        label:
+          en_US: "2K (recommended for wan2.7)"
+          zh_Hans: "2K（wan2.7推荐）"
+      - value: "1K"
+        label:
+          en_US: "1K"
+          zh_Hans: "1K"
       - value: "1280*1280"
         label:
           en_US: "1:1 (1280*1280)"
@@ -116,13 +132,25 @@ parameters:
       en_US: Image Count
       zh_Hans: 图片数量
     human_description:
-      en_US: "Number of images to generate (1-4)"
-      zh_Hans: "生成图像数量（1-4）"
-    llm_description: "Number of images to generate (1-4)"
+      en_US: "Number of images to generate (1-4; up to 12 when sequential mode is enabled for wan2.7)"
+      zh_Hans: "生成图像数量（1-4；wan2.7开启组图时可到12）"
+    llm_description: "Number of images to generate (1-4, or up to 12 with sequential mode on wan2.7)"
     form: form
     default: 3
     min: 1
-    max: 4
+    max: 12
+  - name: enable_sequential
+    type: boolean
+    required: false
+    label:
+      en_US: Enable Sequential (wan2.7)
+      zh_Hans: 组图模式(wan2.7)
+    human_description:
+      en_US: "Enable grouped image generation. Effective for wan2.7 models."
+      zh_Hans: "启用组图生成，对 wan2.7 模型生效。"
+    llm_description: "Enable sequential grouped image generation for wan2.7 models"
+    form: form
+    default: false
   - name: enable_interleave
     type: boolean
     required: false
@@ -130,9 +158,9 @@ parameters:
       en_US: Enable Interleave
       zh_Hans: 交错输出
     human_description:
-      en_US: "Enable interleaved text and image output"
-      zh_Hans: "启用图文混排输出"
-    llm_description: "Enable interleaved text and image output"
+      en_US: "Enable interleaved text and image output (wan2.6 compatibility option)"
+      zh_Hans: "启用图文混排输出（wan2.6兼容参数）"
+    llm_description: "Enable interleaved text and image output for wan2.6 compatibility"
     form: form
     default: false
   - name: max_images
@@ -142,9 +170,9 @@ parameters:
       en_US: Max Images
       zh_Hans: 最大图片数
     human_description:
-      en_US: "Maximum images in interleave mode (1-5)"
-      zh_Hans: "交错输出模式下最大图片数（1-5）"
-    llm_description: "Maximum images in interleave mode"
+      en_US: "Maximum images in interleave mode (1-5, wan2.6 compatibility option)"
+      zh_Hans: "交错输出模式下最大图片数（1-5，wan2.6兼容参数）"
+    llm_description: "Maximum images in interleave mode for wan2.6 compatibility"
     form: form
     default: 5
     min: 1
@@ -156,9 +184,9 @@ parameters:
       en_US: Prompt Extend
       zh_Hans: 提示词智能改写
     human_description:
-      en_US: "Enable AI-powered prompt optimization"
-      zh_Hans: "启用提示词智能改写"
-    llm_description: "Whether to enable prompt intelligent rewriting"
+      en_US: "Enable AI-powered prompt optimization (wan2.6 compatibility option)"
+      zh_Hans: "启用提示词智能改写（wan2.6兼容参数）"
+    llm_description: "Whether to enable prompt intelligent rewriting for wan2.6 compatibility"
     form: form
     default: true
   - name: watermark

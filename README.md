@@ -48,14 +48,16 @@ Generate images from text descriptions using Wanxiang models.
 
 #### Wan Image to Image (wan_image_2_image)
 Generate images from text and reference images using Wanxiang models.
-- **Supported Models**: wan2.6-image
+- **Supported Models**: wan2.7-image-pro, wan2.7-image, wan2.6-image (compatibility)
 - **Features**:
-  - Reference image guided generation (1-4 images)
+  - Reference image guided generation (1-9 images)
   - Multiple aspect ratios (1:1, 2:3, 3:2, 3:4, 4:3, 9:16, 16:9, 21:9)
+  - 1K/2K presets for wan2.7 models
   - Optional watermark
-  - Interleaved text and image output mode
+  - Sequential grouped image output mode (wan2.7)
+  - Interleaved text and image output mode (wan2.6 compatibility)
   - Prompt intelligent rewriting
-  - Batch generation (1-4 images)
+  - Batch generation (1-4 images; up to 12 in wan2.7 sequential mode)
 
 #### Qwen Text to Image (qwen_text_2_image)
 Generate images using Qwen image models.
@@ -212,11 +214,12 @@ Generate images from text descriptions.
 #### 2. Wan Image to Image
 Generate images from text and reference images.
 - **Parameters**:
-  - `model`: Model version (default: wan2.6-image)
-  - `prompt`: Text description (required, <=2000 chars)
-  - `images`: Reference image files (1-4 images, required)
-  - `size`: Image size (default: 1280*1280)
-  - `n`: Number of images to generate (1-4, default: 3)
+  - `model`: Model version (default: wan2.7-image-pro)
+  - `prompt`: Text description (required, <=5000 chars)
+  - `images`: Reference image files (1-9 images, required)
+  - `size`: Image size (default: 2K)
+  - `n`: Number of images to generate (1-4, up to 12 when `enable_sequential=true` on wan2.7)
+  - `enable_sequential`: Enable grouped image generation for wan2.7 (default: false)
   - `enable_interleave`: Enable interleaved output (default: false)
   - `prompt_extend`: Enable prompt intelligent rewriting (default: true)
   - `watermark`: Enable/disable watermark (default: true)

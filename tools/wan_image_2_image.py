@@ -46,8 +46,8 @@ class WanImage2ImageTool(Tool):
                 yield self.create_text_message(msg)
                 return
 
-            if len(prompt) > 2000:
-                prompt = prompt[:2000]
+            if len(prompt) > 5000:
+                prompt = prompt[:5000]
 
             images = tool_parameters.get("images", [])
             if not images or not isinstance(images, list):
@@ -55,8 +55,8 @@ class WanImage2ImageTool(Tool):
                 logger.warning(msg)
                 yield self.create_text_message(msg)
                 return
-            if len(images) > 4:
-                msg = "❌ 最多支持4张参考图片"
+            if len(images) > 9:
+                msg = "❌ 最多支持9张参考图片"
                 logger.warning(msg)
                 yield self.create_text_message(msg)
                 return
@@ -71,20 +71,29 @@ class WanImage2ImageTool(Tool):
                     return
                 processed_images.append(processed_image)
 
-            model = tool_parameters.get("model", "wan2.6-image")
+            supported_models = {"wan2.7-image-pro", "wan2.7-image", "wan2.6-image"}
+            model = tool_parameters.get("model", "wan2.7-image-pro")
+            if model not in supported_models:
+                msg = f"❌ 不支持的模型: {model}"
+                logger.warning(msg)
+                yield self.create_text_message(msg)
+                return
+
+            is_wan27 = model.startswith("wan2.7-")
             negative_prompt = tool_parameters.get("negative_prompt", "")
             if negative_prompt:
                 negative_prompt = negative_prompt[:500]
             prompt_extend = tool_parameters.get("prompt_extend")
             watermark = tool_parameters.get("watermark")
             n = tool_parameters.get("n")
-            size = tool_parameters.get("size", "1280*1280")
+            size = tool_parameters.get("size", "2K")
             seed = tool_parameters.get("seed")
             enable_interleave = tool_parameters.get("enable_interleave")
             max_images = tool_parameters.get("max_images")
+            enable_sequential = tool_parameters.get("enable_sequential")
 
             if not size:
-                size = "1280*1280"
+                size = "2K"
 
             content = [{"text": prompt}] + [{"image": img} for img in processed_images]
 
@@ -94,13 +103,17 @@ class WanImage2ImageTool(Tool):
                 "parameters": {},
             }
 
-            if negative_prompt:
-                payload["parameters"]["negative_prompt"] = negative_prompt
-            if prompt_extend is not None:
-                payload["parameters"]["prompt_extend"] = prompt_extend
+            if not is_wan27:
+                if negative_prompt:
+                    payload["parameters"]["negative_prompt"] = negative_prompt
+                if prompt_extend is not None:
+                    payload["parameters"]["prompt_extend"] = prompt_extend
             if watermark is not None:
                 payload["parameters"]["watermark"] = watermark
-            if enable_interleave is not None:
+            if is_wan27:
+                if enable_sequential is not None:
+                    payload["parameters"]["enable_sequential"] = bool(enable_sequential)
+            elif enable_interleave is not None:
                 payload["parameters"]["enable_interleave"] = enable_interleave
 
             if n is not None:
@@ -109,17 +122,29 @@ class WanImage2ImageTool(Tool):
                 except (TypeError, ValueError):
                     n_value = None
                 if n_value is not None:
-                    if enable_interleave:
-                        n_value = 1
+                    if is_wan27:
+                        if payload["parameters"].get("enable_sequential"):
+                            if n_value < 1:
+                                n_value = 1
+                            if n_value > 12:
+                                n_value = 12
+                        else:
+                            if n_value < 1:
+                                n_value = 1
+                            if n_value > 4:
+                                n_value = 4
                     else:
-                        if n_value < 1:
+                        if enable_interleave:
                             n_value = 1
-                        if n_value > 4:
-                            n_value = 4
+                        else:
+                            if n_value < 1:
+                                n_value = 1
+                            if n_value > 4:
+                                n_value = 4
                     payload["parameters"]["n"] = n_value
 
             payload["parameters"]["size"] = size
-            if max_images is not None:
+            if not is_wan27 and max_images is not None:
                 try:
                     payload["parameters"]["max_images"] = int(max_images)
                 except (TypeError, ValueError):
@@ -254,14 +279,14 @@ class WanImage2ImageTool(Tool):
         if not isinstance(image_bytes, bytes) or len(image_bytes) == 0:
             return ""
 
-        if len(image_bytes) > 10 * 1024 * 1024:
+        if len(image_bytes) > 20 * 1024 * 1024:
             return ""
 
         try:
             image = Image.open(BytesIO(image_bytes))
-            if image.width < 384 or image.height < 384:
+            if image.width < 240 or image.height < 240:
                 return ""
-            if image.width > 5000 or image.height > 5000:
+            if image.width > 8000 or image.height > 8000:
                 return ""
 
             if image.mode == "RGBA":
