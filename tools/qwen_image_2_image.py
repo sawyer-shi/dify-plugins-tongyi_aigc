@@ -14,6 +14,21 @@ from PIL import Image
 
 logger = logging.getLogger(__name__)
 
+QWEN_IMAGE_2_SERIES_MODELS = {
+    "qwen-image-2.0",
+    "qwen-image-2.0-2026-03-03",
+    "qwen-image-2.0-pro",
+    "qwen-image-2.0-pro-2026-03-03",
+}
+
+QWEN_IMAGE_EDIT_MAX_PLUS_MODELS = {
+    "qwen-image-edit-max",
+    "qwen-image-edit-max-2026-01-16",
+    "qwen-image-edit-plus",
+    "qwen-image-edit-plus-2025-12-15",
+    "qwen-image-edit-plus-2025-10-30",
+}
+
 
 class QwenImage2ImageTool(Tool):
     def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage]:
@@ -58,7 +73,7 @@ class QwenImage2ImageTool(Tool):
                 yield self.create_text_message(msg)
                 return
 
-            model = tool_parameters.get("model", "qwen-image-edit-max")
+            model = tool_parameters.get("model", "qwen-image-2.0-pro")
             negative_prompt = tool_parameters.get("negative_prompt", "")
             if negative_prompt:
                 negative_prompt = negative_prompt[:500]
@@ -67,6 +82,17 @@ class QwenImage2ImageTool(Tool):
             size = tool_parameters.get("size", "")
             seed = tool_parameters.get("seed")
             n = tool_parameters.get("n")
+
+            if size and not self._is_size_valid_for_model(model, size):
+                if model in QWEN_IMAGE_2_SERIES_MODELS:
+                    msg = "❌ qwen-image-2.0系列size总像素需在512*512到2048*2048之间"
+                elif model in QWEN_IMAGE_EDIT_MAX_PLUS_MODELS:
+                    msg = "❌ qwen-image-edit-max/plus系列size宽高均需在512到2048之间"
+                else:
+                    msg = "❌ qwen-image-edit模型不支持size参数"
+                logger.warning(msg)
+                yield self.create_text_message(msg)
+                return
 
             yield self.create_text_message("🚀 图生图任务启动中...")
             yield self.create_text_message(f"🤖 使用模型: {model}")
@@ -262,3 +288,30 @@ class QwenImage2ImageTool(Tool):
         except Exception as e:
             logger.error("Error processing image: %s", str(e))
             return ""
+
+    @staticmethod
+    def _is_size_valid_for_model(model: str, size: str) -> bool:
+        if not size:
+            return True
+
+        if "*" not in size:
+            return False
+
+        try:
+            width_text, height_text = size.split("*", 1)
+            width = int(width_text)
+            height = int(height_text)
+        except (TypeError, ValueError):
+            return False
+
+        if width <= 0 or height <= 0:
+            return False
+
+        if model in QWEN_IMAGE_2_SERIES_MODELS:
+            pixels = width * height
+            return 512 * 512 <= pixels <= 2048 * 2048
+
+        if model in QWEN_IMAGE_EDIT_MAX_PLUS_MODELS:
+            return 512 <= width <= 2048 and 512 <= height <= 2048
+
+        return model != "qwen-image-edit"

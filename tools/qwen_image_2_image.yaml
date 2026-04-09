@@ -39,11 +39,10 @@ parameters:
       en_US: Image Size
       zh_Hans: 图像尺寸
     human_description:
-      en_US: "Size of the generated image"
-      zh_Hans: "生成图像的尺寸"
-    llm_description: "Size of the generated image"
+      en_US: "Image size. 2.0: total pixels in [512*512, 2048*2048]; edit-max/plus: width & height in [512,2048]; qwen-image-edit does not support size"
+      zh_Hans: "图像尺寸。2.0系列总像素需在[512*512,2048*2048]；edit-max/plus宽高需在[512,2048]；qwen-image-edit不支持size"
+    llm_description: "Output size. 2.0 uses total-pixel range; edit-max/plus use width-height range; qwen-image-edit doesn't support this parameter"
     form: form
-    default: "1024*1024"
     options:
       - value: "1024*1024"
         label:
@@ -142,7 +141,7 @@ parameters:
       zh_Hans: "是否在图像上添加水印"
     llm_description: "Whether to add watermark"
     form: form
-    default: true
+    default: false
   - name: seed
     type: number
     required: false
@@ -161,11 +160,11 @@ parameters:
       en_US: Image Count
       zh_Hans: 图片数量
     human_description:
-      en_US: "Number of images to generate"
-      zh_Hans: "生成图像数量"
-    llm_description: "Number of images to generate"
+      en_US: "For qwen-image-2.0/edit-max/edit-plus: 1-6 images. qwen-image-edit is fixed to 1"
+      zh_Hans: "qwen-image-2.0/edit-max/edit-plus支持1-6张，qwen-image-edit固定为1张"
+    llm_description: "Image count. qwen-image-2.0/edit-max/edit-plus support 1-6; qwen-image-edit is fixed to 1"
     form: form
-    default: 3
+    default: 1
     min: 1
     max: 6
   - name: model
@@ -179,8 +178,24 @@ parameters:
       zh_Hans: "选择要使用的Qwen图像编辑模型"
     llm_description: "Choose the Qwen image edit model version"
     form: form
-    default: "qwen-image-edit-max"
+    default: "qwen-image-2.0-pro"
     options:
+      - value: "qwen-image-2.0-pro"
+        label:
+          en_US: "Qwen Image 2.0 Pro"
+          zh_Hans: "Qwen Image 2.0 Pro"
+      - value: "qwen-image-2.0-pro-2026-03-03"
+        label:
+          en_US: "Qwen Image 2.0 Pro 2026-03-03"
+          zh_Hans: "Qwen Image 2.0 Pro 2026-03-03"
+      - value: "qwen-image-2.0"
+        label:
+          en_US: "Qwen Image 2.0"
+          zh_Hans: "Qwen Image 2.0"
+      - value: "qwen-image-2.0-2026-03-03"
+        label:
+          en_US: "Qwen Image 2.0 2026-03-03"
+          zh_Hans: "Qwen Image 2.0 2026-03-03"
       - value: "qwen-image-edit-max"
         label:
           en_US: "Qwen Image Edit Max"
