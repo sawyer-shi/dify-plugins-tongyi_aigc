@@ -4,13 +4,11 @@ import base64
 import json
 import logging
 from collections.abc import Generator
-from io import BytesIO
 from typing import Any
 
 import requests
 from dify_plugin import Tool
 from dify_plugin.entities.tool import ToolInvokeMessage
-from PIL import Image
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +43,8 @@ class WanText2VideoTool(Tool):
                 yield self.create_text_message(msg)
                 return
 
+            is_wan27 = model.startswith("wan2.7-")
+
             payload: dict[str, Any] = {
                 "model": model,
                 "input": {"prompt": prompt},
@@ -52,7 +52,9 @@ class WanText2VideoTool(Tool):
             }
 
             input_params = payload["input"]
-            if model.startswith("wan2.6-t2v") or model.startswith("wan2.5-t2v"):
+            if is_wan27:
+                prompt_limit = 5000
+            elif model.startswith("wan2.6-t2v") or model.startswith("wan2.5-t2v"):
                 prompt_limit = 1500
             else:
                 prompt_limit = 800
@@ -63,35 +65,60 @@ class WanText2VideoTool(Tool):
                 input_params["negative_prompt"] = negative_prompt.strip()[:500]
 
             audio_url = tool_parameters.get("audio_url", "")
-            if audio_url:
+            if audio_url and (
+                is_wan27
+                or model.startswith("wan2.6-t2v")
+                or model.startswith("wan2.5-t2v")
+            ):
                 processed_audio = self._process_audio(audio_url)
                 if processed_audio:
                     input_params["audio_url"] = processed_audio
 
             params = payload["parameters"]
+
             size = tool_parameters.get("size", "")
-            if size:
-                params["size"] = size.strip()
+            resolution = tool_parameters.get("resolution", "")
+            ratio = tool_parameters.get("ratio", "")
+            if is_wan27:
+                if resolution:
+                    params["resolution"] = str(resolution).strip().upper()
+                if ratio:
+                    params["ratio"] = str(ratio).strip()
+
+                if size and ("resolution" not in params or "ratio" not in params):
+                    mapped_resolution, mapped_ratio = self._map_size_to_wan27(size)
+                    if mapped_resolution and "resolution" not in params:
+                        params["resolution"] = mapped_resolution
+                    if mapped_ratio and "ratio" not in params:
+                        params["ratio"] = mapped_ratio
+            elif size:
+                params["size"] = str(size).strip()
+
             duration = tool_parameters.get("duration")
             if duration is not None:
                 try:
                     params["duration"] = int(duration)
                 except (TypeError, ValueError):
                     pass
+
             prompt_extend = tool_parameters.get("prompt_extend")
             if prompt_extend is not None:
                 params["prompt_extend"] = prompt_extend
+
             shot_type = tool_parameters.get("shot_type", "")
             if shot_type and model.startswith("wan2.6-t2v"):
                 params["shot_type"] = shot_type.strip()
+
             audio = tool_parameters.get("audio")
             if audio is not None and (
                 model.startswith("wan2.6-t2v") or model.startswith("wan2.5-t2v")
             ):
                 params["audio"] = audio
+
             watermark = tool_parameters.get("watermark")
             if watermark is not None:
                 params["watermark"] = watermark
+
             seed = tool_parameters.get("seed")
             if seed is not None:
                 try:
@@ -156,7 +183,14 @@ class WanText2VideoTool(Tool):
                 yield self.create_json_message(result_data)
                 return
 
-            yield self.create_text_message(self._format_response_text(result_data))
+            yield self.create_text_message(
+                self._format_response_text(
+                    result_data,
+                    model=model,
+                    prompt=input_params.get("prompt", ""),
+                    parameters=params,
+                )
+            )
             yield self.create_json_message(result_data)
             logger.info("Wan text-to-video task submitted")
 
@@ -164,6 +198,28 @@ class WanText2VideoTool(Tool):
             error_msg = f"❌ 生成视频时出现未预期错误: {str(e)}"
             logger.exception(error_msg)
             yield self.create_text_message(error_msg)
+
+    @staticmethod
+    def _map_size_to_wan27(size: Any) -> tuple[str, str]:
+        normalized_size = str(size).strip().lower().replace(" ", "")
+        mapping = {
+            "1280*720": ("720P", "16:9"),
+            "720*1280": ("720P", "9:16"),
+            "960*960": ("720P", "1:1"),
+            "1104*832": ("720P", "4:3"),
+            "832*1104": ("720P", "3:4"),
+            "1920*1080": ("1080P", "16:9"),
+            "1080*1920": ("1080P", "9:16"),
+            "1440*1440": ("1080P", "1:1"),
+            "1648*1248": ("1080P", "4:3"),
+            "1248*1648": ("1080P", "3:4"),
+            # Legacy mappings from wan2.6 preset values.
+            "1088*832": ("720P", "4:3"),
+            "832*1088": ("720P", "3:4"),
+            "1632*1248": ("1080P", "4:3"),
+            "1248*1632": ("1080P", "3:4"),
+        }
+        return mapping.get(normalized_size, ("", ""))
 
     @staticmethod
     def _process_audio(audio_data: Any) -> str:
@@ -220,15 +276,21 @@ class WanText2VideoTool(Tool):
             return ""
 
     @staticmethod
-    def _format_response_text(result_data: dict[str, Any]) -> str:
+    def _format_response_text(
+        result_data: dict[str, Any],
+        model: str = "unknown",
+        prompt: str = "unknown",
+        parameters: dict[str, Any] | None = None,
+    ) -> str:
         request_id = result_data.get("request_id", "unknown")
         task_id = result_data.get("output", {}).get("task_id", "unknown")
         task_status = result_data.get("output", {}).get("task_status", "PENDING")
-        model = result_data.get("model", "unknown")
-        input_data = result_data.get("input", {})
-        prompt = input_data.get("prompt", "unknown")
-        params = result_data.get("parameters", {})
+        params = parameters or {}
         size = params.get("size", "default")
+        resolution = params.get("resolution", "")
+        ratio = params.get("ratio", "")
+        if resolution or ratio:
+            size = f"{resolution or 'default'} / {ratio or 'default'}"
         duration = params.get("duration", "default")
         prompt_extend = params.get("prompt_extend", "default")
 

@@ -23,6 +23,10 @@ parameters:
     form: form
     default: "wan2.6-t2v"
     options:
+      - value: "wan2.7-t2v"
+        label:
+          en_US: "Wanxiang 2.7 Text to Video"
+          zh_Hans: "万相2.7文生视频"
       - value: "wan2.6-t2v"
         label:
           en_US: "Wanxiang 2.6 Text to Video"
@@ -83,11 +87,65 @@ parameters:
       en_US: "Resolution"
       zh_Hans: "分辨率"
     human_description:
-      en_US: "Video resolution (width*height)"
-      zh_Hans: "视频分辨率（宽*高）"
-    llm_description: "Video resolution in width*height format"
+      en_US: "Video resolution (width*height). Used by wan2.6 and earlier models."
+      zh_Hans: "视频分辨率（宽*高）。用于 wan2.6 及更早模型。"
+    llm_description: "Video resolution in width*height format for wan2.6 and earlier models"
     form: form
     default: "1920*1080"
+  - name: resolution
+    type: select
+    required: false
+    label:
+      en_US: "Resolution Tier"
+      zh_Hans: "分辨率档位"
+    human_description:
+      en_US: "Used by wan2.7-t2v. Select 720P or 1080P."
+      zh_Hans: "用于 wan2.7-t2v。可选 720P 或 1080P。"
+    llm_description: "Resolution tier for wan2.7-t2v"
+    form: form
+    default: "1080P"
+    options:
+      - value: "720P"
+        label:
+          en_US: "720P"
+          zh_Hans: "720P"
+      - value: "1080P"
+        label:
+          en_US: "1080P"
+          zh_Hans: "1080P"
+  - name: ratio
+    type: select
+    required: false
+    label:
+      en_US: "Aspect Ratio"
+      zh_Hans: "宽高比"
+    human_description:
+      en_US: "Used by wan2.7-t2v. Aspect ratio for generated video."
+      zh_Hans: "用于 wan2.7-t2v。设置生成视频宽高比。"
+    llm_description: "Aspect ratio for wan2.7-t2v"
+    form: form
+    default: "16:9"
+    options:
+      - value: "16:9"
+        label:
+          en_US: "16:9"
+          zh_Hans: "16:9"
+      - value: "9:16"
+        label:
+          en_US: "9:16"
+          zh_Hans: "9:16"
+      - value: "1:1"
+        label:
+          en_US: "1:1"
+          zh_Hans: "1:1"
+      - value: "4:3"
+        label:
+          en_US: "4:3"
+          zh_Hans: "4:3"
+      - value: "3:4"
+        label:
+          en_US: "3:4"
+          zh_Hans: "3:4"
   - name: duration
     type: string
     required: false
@@ -119,9 +177,9 @@ parameters:
       en_US: "Shot Type"
       zh_Hans: "镜头类型"
     human_description:
-      en_US: "Type of video shot"
-      zh_Hans: "视频镜头类型"
-    llm_description: "Type of video shot"
+      en_US: "Type of video shot. Only valid for wan2.6-t2v."
+      zh_Hans: "视频镜头类型。仅 wan2.6-t2v 生效。"
+    llm_description: "Type of video shot, only for wan2.6-t2v"
     form: form
     default: "single"
     options:

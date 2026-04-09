@@ -106,13 +106,13 @@ AI 驱动的 OCR 和翻译功能，翻译图像中的文字。
 
 #### 文生视频 (wan_text_2_video)
 使用万相模型根据文本描述生成视频。
-- **支持模型**: wan2.6-t2v, wan2.5-t2v-preview, wan2.2-t2v-plus, wanx2.1-t2v-turbo, wanx2.1-t2v-plus
+- **支持模型**: wan2.7-t2v, wan2.6-t2v, wan2.5-t2v-preview, wan2.2-t2v-plus, wanx2.1-t2v-turbo, wanx2.1-t2v-plus
 - **功能特性**:
   - 时长：2-15 秒（因模型而异）
-  - 分辨率：1920*1080（默认）
+  - 分辨率控制：wan2.7 使用 `resolution + ratio`，wan2.6 及更早模型使用 `size`
   - 同步音频生成
   - 提示词智能改写
-  - 单镜头/多镜头支持
+  - 单镜头/多镜头支持（wan2.6 用 `shot_type`，wan2.7 通过 prompt 描述）
   - 自定义音频 URL
   - 反向提示词支持
 

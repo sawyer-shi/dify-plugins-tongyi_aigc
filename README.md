@@ -106,13 +106,13 @@ Translate text in images with AI-powered OCR and translation.
 
 #### Text to Video (wan_text_2_video)
 Generate videos from text descriptions using Wanxiang models.
-- **Supported Models**: wan2.6-t2v, wan2.5-t2v-preview, wan2.2-t2v-plus, wanx2.1-t2v-turbo, wanx2.1-t2v-plus
+- **Supported Models**: wan2.7-t2v, wan2.6-t2v, wan2.5-t2v-preview, wan2.2-t2v-plus, wanx2.1-t2v-turbo, wanx2.1-t2v-plus
 - **Features**:
   - Duration: 2-15 seconds (model dependent)
-  - Resolution: 1920*1080 (default)
+  - Resolution control: `resolution + ratio` (wan2.7) or `size` (wan2.6 and earlier)
   - Synchronized audio generation
   - Prompt intelligent rewriting
-  - Single/Multi shot support
+  - Single/Multi shot support (shot_type for wan2.6, prompt-driven for wan2.7)
   - Custom audio URL support
   - Negative prompt support
 
