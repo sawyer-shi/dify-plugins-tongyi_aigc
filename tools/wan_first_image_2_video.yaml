@@ -6,9 +6,9 @@ identity:
     zh_Hans: "Wan-图生视频"
 description:
   human:
-    en_US: "Generate video from an image using Tongyi Wanxiang API"
-    zh_Hans: "使用通义万相模型从图片生成视频"
-  llm: "Create video from image with customizable parameters including model selection, prompt, image input, and more."
+    en_US: "Generate video with image/video inputs using Tongyi Wanxiang API"
+    zh_Hans: "使用通义万相模型通过图像/视频素材生成视频"
+  llm: "Create video from image or video clip with customizable parameters including model selection, prompt, media inputs, and more."
 parameters:
   - name: model
     type: select
@@ -23,6 +23,10 @@ parameters:
     form: form
     default: "wan2.6-i2v"
     options:
+      - value: "wan2.7-i2v"
+        label:
+          en_US: "Wanxiang 2.7 Image to Video"
+          zh_Hans: "万相2.7图生视频"
       - value: "wan2.6-i2v"
         label:
           en_US: "Wanxiang 2.6 Image to Video"
@@ -80,6 +84,50 @@ parameters:
       zh_Hans: "上传一个图片文件作为视频的第一帧"
     llm_description: "Upload an image file to be used as the first frame"
     form: llm
+  - name: img_url
+    type: string
+    required: false
+    label:
+      en_US: "First Frame URL"
+      zh_Hans: "首帧URL"
+    human_description:
+      en_US: "Public URL for first frame image (http/https/oss)"
+      zh_Hans: "首帧图像的公网URL（http/https/oss）"
+    llm_description: "First frame image URL"
+    form: llm
+  - name: last_frame_input
+    type: file
+    required: false
+    label:
+      en_US: "Last Frame File"
+      zh_Hans: "尾帧文件"
+    human_description:
+      en_US: "Optional last frame image file. Mainly for wan2.7-i2v first+last frame mode."
+      zh_Hans: "可选尾帧图片文件，主要用于 wan2.7-i2v 首尾帧模式。"
+    llm_description: "Optional last frame image file"
+    form: llm
+  - name: last_frame_url
+    type: string
+    required: false
+    label:
+      en_US: "Last Frame URL"
+      zh_Hans: "尾帧URL"
+    human_description:
+      en_US: "Optional public URL for last frame image (http/https/oss)"
+      zh_Hans: "可选尾帧图像公网URL（http/https/oss）"
+    llm_description: "Optional last frame image URL"
+    form: llm
+  - name: first_clip_url
+    type: string
+    required: false
+    label:
+      en_US: "First Clip URL"
+      zh_Hans: "首段视频URL"
+    human_description:
+      en_US: "Video continuation input. Only for wan2.7-i2v (first_clip or first_clip+last_frame)."
+      zh_Hans: "视频续写输入，仅用于 wan2.7-i2v（first_clip 或 first_clip+last_frame）。"
+    llm_description: "Optional first clip video URL for continuation"
+    form: llm
   - name: audio_url
     type: string
     required: false
@@ -87,9 +135,9 @@ parameters:
       en_US: "Audio URL"
       zh_Hans: "音频URL"
     human_description:
-      en_US: "Audio file URL for the video"
-      zh_Hans: "视频音频文件URL"
-    llm_description: "Audio file URL for the video"
+      en_US: "Audio file URL for the video. For wan2.7-i2v only valid in first-frame modes."
+      zh_Hans: "视频音频文件URL。wan2.7-i2v 仅在首帧模式下生效。"
+    llm_description: "Audio file URL for video generation"
     form: llm
   - name: template
     type: string
@@ -110,9 +158,9 @@ parameters:
       en_US: "Resolution"
       zh_Hans: "分辨率"
     human_description:
-      en_US: "Video resolution quality"
-      zh_Hans: "视频分辨率质量"
-    llm_description: "Video resolution quality"
+      en_US: "Video resolution quality. wan2.7-i2v supports 720P/1080P only."
+      zh_Hans: "视频分辨率质量。wan2.7-i2v 仅支持 720P/1080P。"
+    llm_description: "Video resolution quality for image-to-video generation"
     form: form
     default: "1080P"
     options:

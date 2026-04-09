@@ -24,6 +24,7 @@ class WanFirstImage2VideoTool(Tool):
 
         try:
             model = tool_parameters.get("model", "wan2.6-i2v").strip()
+            is_wan27_i2v = model.startswith("wan2.7-i2v")
             api_key = self.runtime.credentials.get("api_key")
             if not api_key:
                 msg = "❌ API密钥未配置"
@@ -34,34 +35,78 @@ class WanFirstImage2VideoTool(Tool):
             image_obj = tool_parameters.get("image_input")
             img_url_str = tool_parameters.get("img_url")
             processed_img = self._process_image(image_obj if image_obj else img_url_str)
-            if not processed_img:
-                yield self.create_text_message("❌ 请上传有效的图片")
-                return
+            audio_url = tool_parameters.get("audio_url", "").strip()
 
-            payload: dict[str, Any] = {
-                "model": model,
-                "input": {
-                    "img_url": processed_img,
-                },
-                "parameters": {},
-            }
+            payload: dict[str, Any]
+            if is_wan27_i2v:
+                last_frame_obj = tool_parameters.get("last_frame_input")
+                last_frame_url = tool_parameters.get("last_frame_url")
+                processed_last_frame = self._process_image(
+                    last_frame_obj if last_frame_obj else last_frame_url
+                )
+                first_clip_url = tool_parameters.get("first_clip_url", "").strip()
+
+                media: list[dict[str, str]] = []
+                if first_clip_url:
+                    media.append({"type": "first_clip", "url": first_clip_url})
+                    if processed_last_frame:
+                        media.append({"type": "last_frame", "url": processed_last_frame})
+                    if audio_url:
+                        yield self.create_text_message(
+                            "ℹ️ wan2.7-i2v 的视频续写模式不支持 driving_audio，已忽略 audio_url。"
+                        )
+                else:
+                    if not processed_img:
+                        yield self.create_text_message("❌ 请上传有效的首帧图片")
+                        return
+                    media.append({"type": "first_frame", "url": processed_img})
+                    if processed_last_frame:
+                        media.append({"type": "last_frame", "url": processed_last_frame})
+                    if audio_url:
+                        media.append({"type": "driving_audio", "url": audio_url})
+
+                payload = {
+                    "model": model,
+                    "input": {
+                        "media": media,
+                    },
+                    "parameters": {},
+                }
+            else:
+                if not processed_img:
+                    yield self.create_text_message("❌ 请上传有效的图片")
+                    return
+                payload = {
+                    "model": model,
+                    "input": {
+                        "img_url": processed_img,
+                    },
+                    "parameters": {},
+                }
 
             input_params = payload["input"]
             prompt = tool_parameters.get("prompt", "").strip()
             if prompt:
-                limit = 1500 if "wan2.6" in model or "wan2.5" in model else 800
+                if is_wan27_i2v:
+                    limit = 5000
+                else:
+                    limit = 1500 if "wan2.6" in model or "wan2.5" in model else 800
                 input_params["prompt"] = prompt[:limit]
 
             negative_prompt = tool_parameters.get("negative_prompt", "").strip()
             if negative_prompt:
                 input_params["negative_prompt"] = negative_prompt[:500]
 
-            audio_url = tool_parameters.get("audio_url", "").strip()
             if audio_url and ("wan2.6" in model or "wan2.5" in model):
                 input_params["audio_url"] = audio_url
 
             params = payload["parameters"]
-            resolution = tool_parameters.get("resolution", "1080P").strip()
+            resolution = tool_parameters.get("resolution", "1080P").strip().upper()
+            if is_wan27_i2v and resolution and resolution not in {"720P", "1080P"}:
+                yield self.create_text_message(
+                    "ℹ️ wan2.7-i2v 仅支持 720P/1080P，已自动回退为 1080P。"
+                )
+                resolution = "1080P"
             if resolution:
                 params["resolution"] = resolution
             duration = tool_parameters.get("duration", "5")
@@ -73,7 +118,7 @@ class WanFirstImage2VideoTool(Tool):
             if tool_parameters.get("prompt_extend") is not None:
                 params["prompt_extend"] = tool_parameters.get("prompt_extend")
             template = tool_parameters.get("template", "").strip()
-            if template:
+            if template and not is_wan27_i2v:
                 params["template"] = template
             if tool_parameters.get("watermark") is not None:
                 params["watermark"] = tool_parameters.get("watermark")
@@ -83,9 +128,9 @@ class WanFirstImage2VideoTool(Tool):
                 except (TypeError, ValueError):
                     pass
             shot_type = tool_parameters.get("shot_type", "").strip()
-            if "wan2.6" in model and shot_type:
+            if "wan2.6" in model and shot_type and not is_wan27_i2v:
                 params["shot_type"] = shot_type
-            if "wan2.6" in model or "wan2.5" in model:
+            if ("wan2.6" in model or "wan2.5" in model) and not is_wan27_i2v:
                 if tool_parameters.get("audio") is not None and not audio_url:
                     params["audio"] = tool_parameters.get("audio")
 
@@ -97,8 +142,21 @@ class WanFirstImage2VideoTool(Tool):
             }
 
             debug_payload = json.loads(json.dumps(payload))
-            if len(debug_payload["input"]["img_url"]) > 200:
-                debug_payload["input"]["img_url"] = "data:image/...[Base64 Hidden]"
+            if "img_url" in debug_payload.get("input", {}):
+                if len(debug_payload["input"]["img_url"]) > 200:
+                    debug_payload["input"]["img_url"] = "data:image/...[Base64 Hidden]"
+            for media_item in debug_payload.get("input", {}).get("media", []):
+                media_url = media_item.get("url", "")
+                if isinstance(media_url, str) and len(media_url) > 200:
+                    media_type = media_item.get("type", "media")
+                    if media_type in {"first_frame", "last_frame"}:
+                        media_item["url"] = "data:image/...[Base64 Hidden]"
+                    elif media_type == "driving_audio":
+                        media_item["url"] = "data:audio/...[Hidden]"
+                    elif media_type == "first_clip":
+                        media_item["url"] = "https://.../[Video URL Hidden]"
+                    else:
+                        media_item["url"] = "...[Hidden]"
             logger.info("Request Payload: %s", json.dumps(debug_payload, ensure_ascii=False))
 
             yield self.create_text_message("🚀 图生视频任务启动中...")

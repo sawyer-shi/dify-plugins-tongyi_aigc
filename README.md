@@ -118,9 +118,10 @@ Generate videos from text descriptions using Wanxiang models.
 
 #### Image to Video (wan_first_image_2_video)
 Generate video from a single image with text description.
-- **Supported Models**: wan2.6-i2v, wan2.5-i2v-preview, wan2.2-i2v-flash, wan2.2-i2v-plus, wanx2.1-i2v-turbo, wanx2.1-i2v-plus
+- **Supported Models**: wan2.7-i2v, wan2.6-i2v, wan2.5-i2v-preview, wan2.2-i2v-flash, wan2.2-i2v-plus, wanx2.1-i2v-turbo, wanx2.1-i2v-plus
 - **Features**:
-  - Single image input as first frame
+  - Multi-modal inputs on wan2.7-i2v: first-frame, first+last frame, or video continuation
+  - Single image input as first frame (legacy models)
   - Duration: 2-15 seconds (model dependent)
   - Resolution: 480P, 720P, 1080P
   - Synchronized audio generation
@@ -284,15 +285,17 @@ Generate videos from text descriptions.
   - `seed`: Random seed for reproducibility
 
 #### 8. Image to Video
-Generate video from a single image.
+Generate video from an image or continue from a video clip.
 - **Parameters**:
-  - `model`: Model version (default: wan2.6-i2v)
+  - `model`: Model version (default: wan2.6-i2v, supports wan2.7-i2v)
   - `prompt`: Text description
-  - `image_input`: Input image file
+  - `image_input` / `img_url`: First frame image input
+  - `last_frame_input` / `last_frame_url`: Optional last frame image (wan2.7-i2v)
+  - `first_clip_url`: Optional first clip video URL for continuation (wan2.7-i2v)
   - `resolution`: Video resolution (default: 1080P)
   - `duration`: Duration in seconds (model dependent, default: 5)
   - `template`: Video effect template
-  - `audio_url`: Custom audio file URL
+  - `audio_url`: Custom audio file URL (wan2.7-i2v only in first-frame modes)
   - `audio`: Auto generate audio (default: true)
   - `shot_type`: Single or multi shot (default: single)
   - `prompt_extend`: Enable prompt intelligent rewriting (default: true)

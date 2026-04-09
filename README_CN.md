@@ -118,9 +118,10 @@ AI 驱动的 OCR 和翻译功能，翻译图像中的文字。
 
 #### 图生视频 (wan_first_image_2_video)
 根据单张图像和文本描述生成视频。
-- **支持模型**: wan2.6-i2v, wan2.5-i2v-preview, wan2.2-i2v-flash, wan2.2-i2v-plus, wanx2.1-i2v-turbo, wanx2.1-i2v-plus
+- **支持模型**: wan2.7-i2v, wan2.6-i2v, wan2.5-i2v-preview, wan2.2-i2v-flash, wan2.2-i2v-plus, wanx2.1-i2v-turbo, wanx2.1-i2v-plus
 - **功能特性**:
-  - 单张图像输入作为首帧
+  - wan2.7-i2v 支持多模态输入：首帧、首尾帧、视频续写
+  - 早期模型支持单图首帧输入
   - 时长：2-15 秒（因模型而异）
   - 分辨率：480P、720P、1080P
   - 同步音频生成
@@ -284,15 +285,17 @@ AI 驱动的 OCR 和翻译功能，翻译图像中的文字。
   - `seed`: 随机种子可复现
 
 #### 8. 图生视频
-根据单张图像生成视频。
+根据图像生成视频，或基于首段视频进行续写。
 - **参数**:
-  - `model`: 模型版本（默认：wan2.6-i2v）
+  - `model`: 模型版本（默认：wan2.6-i2v，支持 wan2.7-i2v）
   - `prompt`: 文本描述
-  - `image_input`: 输入图像文件
+  - `image_input` / `img_url`: 首帧图像输入
+  - `last_frame_input` / `last_frame_url`: 可选尾帧图像（wan2.7-i2v）
+  - `first_clip_url`: 可选首段视频 URL（wan2.7-i2v 续写）
   - `resolution`: 视频分辨率（默认：1080P）
   - `duration`: 时长（秒）（因模型而异，默认：5）
   - `template`: 视频特效模板
-  - `audio_url`: 自定义音频文件 URL
+  - `audio_url`: 自定义音频文件 URL（wan2.7-i2v 仅首帧模式可用）
   - `audio`: 自动生成音频（默认：启用）
   - `shot_type`: 单镜头或多镜头（默认：单镜头）
   - `prompt_extend`: 启用提示词智能改写（默认：启用）
