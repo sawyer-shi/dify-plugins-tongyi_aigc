@@ -11,6 +11,21 @@ from dify_plugin.entities.tool import ToolInvokeMessage
 
 logger = logging.getLogger(__name__)
 
+QWEN_IMAGE_2_SERIES_MODELS = {
+    "qwen-image-2.0",
+    "qwen-image-2.0-2026-03-03",
+    "qwen-image-2.0-pro",
+    "qwen-image-2.0-pro-2026-03-03",
+}
+
+QWEN_IMAGE_LEGACY_SIZE_OPTIONS = {
+    "1664*928",
+    "1472*1104",
+    "1328*1328",
+    "1104*1472",
+    "928*1664",
+}
+
 
 class QwenText2ImageTool(Tool):
     def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage]:
@@ -43,7 +58,7 @@ class QwenText2ImageTool(Tool):
             if len(prompt) > 800:
                 prompt = prompt[:800]
 
-            model = tool_parameters.get("model", "qwen-image-max")
+            model = tool_parameters.get("model", "qwen-image-2.0-pro")
             negative_prompt = tool_parameters.get("negative_prompt", "")
             if negative_prompt:
                 negative_prompt = negative_prompt[:500]
@@ -51,9 +66,22 @@ class QwenText2ImageTool(Tool):
             watermark = tool_parameters.get("watermark")
             size = tool_parameters.get("size", "")
             seed = tool_parameters.get("seed")
+            n = tool_parameters.get("n")
 
             if not size:
-                size = "1664*928"
+                size = "2048*2048" if model in QWEN_IMAGE_2_SERIES_MODELS else "1664*928"
+
+            if model in QWEN_IMAGE_2_SERIES_MODELS:
+                if not self._is_valid_qwen_image_2_size(size):
+                    msg = "❌ qwen-image-2.0系列的size总像素需在512*512到2048*2048之间"
+                    logger.warning(msg)
+                    yield self.create_text_message(msg)
+                    return
+            elif size not in QWEN_IMAGE_LEGACY_SIZE_OPTIONS:
+                msg = "❌ 当前模型仅支持固定分辨率：1664*928/1472*1104/1328*1328/1104*1472/928*1664"
+                logger.warning(msg)
+                yield self.create_text_message(msg)
+                return
 
             yield self.create_text_message("🚀 文生图任务启动中...")
             yield self.create_text_message(f"🤖 使用模型: {model}")
@@ -86,6 +114,20 @@ class QwenText2ImageTool(Tool):
             if watermark is not None:
                 payload["parameters"]["watermark"] = watermark
             payload["parameters"]["size"] = size
+            if n is not None:
+                try:
+                    n_value = int(n)
+                except (TypeError, ValueError):
+                    n_value = 1
+
+                if model in QWEN_IMAGE_2_SERIES_MODELS:
+                    if n_value < 1:
+                        n_value = 1
+                    if n_value > 6:
+                        n_value = 6
+                else:
+                    n_value = 1
+                payload["parameters"]["n"] = n_value
             if seed is not None:
                 try:
                     payload["parameters"]["seed"] = int(seed)
@@ -169,3 +211,20 @@ class QwenText2ImageTool(Tool):
             error_msg = f"❌ 生成图像时出现未预期错误: {str(e)}"
             logger.exception(error_msg)
             yield self.create_text_message(error_msg)
+
+    @staticmethod
+    def _is_valid_qwen_image_2_size(size: str) -> bool:
+        if not size or "*" not in size:
+            return False
+        try:
+            width_text, height_text = size.split("*", 1)
+            width = int(width_text)
+            height = int(height_text)
+        except (TypeError, ValueError):
+            return False
+
+        if width <= 0 or height <= 0:
+            return False
+
+        pixels = width * height
+        return 512 * 512 <= pixels <= 2048 * 2048

@@ -32,28 +32,60 @@ parameters:
       zh_Hans: "生成图像的尺寸"
     llm_description: "Size of the generated image"
     form: form
-    default: "1664*928"
+    default: "2048*2048"
     options:
+      - value: "2048*2048"
+        label:
+          en_US: "1:1 (2048*2048, 2.0 default)"
+          zh_Hans: "1:1 (2048*2048, 2.0默认)"
+      - value: "2688*1536"
+        label:
+          en_US: "16:9 (2688*1536, 2.0)"
+          zh_Hans: "16:9 (2688*1536, 2.0)"
+      - value: "1536*2688"
+        label:
+          en_US: "9:16 (1536*2688, 2.0)"
+          zh_Hans: "9:16 (1536*2688, 2.0)"
+      - value: "2368*1728"
+        label:
+          en_US: "4:3 (2368*1728, 2.0)"
+          zh_Hans: "4:3 (2368*1728, 2.0)"
+      - value: "1728*2368"
+        label:
+          en_US: "3:4 (1728*2368, 2.0)"
+          zh_Hans: "3:4 (1728*2368, 2.0)"
       - value: "1664*928"
         label:
-          en_US: "16:9 (1664*928)"
-          zh_Hans: "16:9 (1664*928)"
+          en_US: "16:9 (1664*928, max/plus)"
+          zh_Hans: "16:9 (1664*928, max/plus)"
       - value: "1472*1104"
         label:
-          en_US: "4:3 (1472*1104)"
-          zh_Hans: "4:3 (1472*1104)"
+          en_US: "4:3 (1472*1104, max/plus)"
+          zh_Hans: "4:3 (1472*1104, max/plus)"
       - value: "1328*1328"
         label:
-          en_US: "1:1 (1328*1328)"
-          zh_Hans: "1:1 (1328*1328)"
+          en_US: "1:1 (1328*1328, max/plus)"
+          zh_Hans: "1:1 (1328*1328, max/plus)"
       - value: "1104*1472"
         label:
-          en_US: "3:4 (1104*1472)"
-          zh_Hans: "3:4 (1104*1472)"
+          en_US: "3:4 (1104*1472, max/plus)"
+          zh_Hans: "3:4 (1104*1472, max/plus)"
       - value: "928*1664"
         label:
-          en_US: "9:16 (928*1664)"
-          zh_Hans: "9:16 (928*1664)"
+          en_US: "9:16 (928*1664, max/plus)"
+          zh_Hans: "9:16 (928*1664, max/plus)"
+  - name: n
+    type: number
+    required: false
+    label:
+      en_US: Image Count
+      zh_Hans: 出图数量
+    human_description:
+      en_US: "For qwen-image-2.0 series: 1-6 images. Other models are fixed to 1"
+      zh_Hans: "qwen-image-2.0系列支持1-6张，其他模型固定为1"
+    llm_description: "Image count. qwen-image-2.0 series supports 1-6; other models are fixed to 1"
+    form: form
+    default: 1
   - name: negative_prompt
     type: string
     required: false
@@ -110,8 +142,24 @@ parameters:
       zh_Hans: "选择要使用的Qwen模型版本"
     llm_description: "Choose the Qwen model version"
     form: form
-    default: "qwen-image-max"
+    default: "qwen-image-2.0-pro"
     options:
+      - value: "qwen-image-2.0-pro"
+        label:
+          en_US: "Qwen Image 2.0 Pro"
+          zh_Hans: "Qwen Image 2.0 Pro"
+      - value: "qwen-image-2.0-pro-2026-03-03"
+        label:
+          en_US: "Qwen Image 2.0 Pro 2026-03-03"
+          zh_Hans: "Qwen Image 2.0 Pro 2026-03-03"
+      - value: "qwen-image-2.0"
+        label:
+          en_US: "Qwen Image 2.0"
+          zh_Hans: "Qwen Image 2.0"
+      - value: "qwen-image-2.0-2026-03-03"
+        label:
+          en_US: "Qwen Image 2.0 2026-03-03"
+          zh_Hans: "Qwen Image 2.0 2026-03-03"
       - value: "qwen-image-max"
         label:
           en_US: "Qwen Image Max"
@@ -128,6 +176,10 @@ parameters:
         label:
           en_US: "Qwen Image Plus 2026-01-09"
           zh_Hans: "Qwen Image Plus 2026-01-09"
+      - value: "qwen-image"
+        label:
+          en_US: "Qwen Image"
+          zh_Hans: "Qwen Image"
 extra:
   python:
     source: tools/qwen_text_2_image.py
