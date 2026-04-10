@@ -22,6 +22,7 @@ class WanReferenceVideoTool(Tool):
 
         try:
             model = tool_parameters.get("model", "wan2.6-r2v").strip()
+            is_wan27 = model.startswith("wan2.7-")
             api_key = self.runtime.credentials.get("api_key")
             if not api_key:
                 msg = "❌ API密钥未配置"
@@ -45,7 +46,7 @@ class WanReferenceVideoTool(Tool):
 
             processed_urls: list[str] = []
             for ref_url in reference_urls:
-                processed_url = self._process_video(ref_url)
+                processed_url = self._process_media(ref_url)
                 if not processed_url:
                     yield self.create_text_message(f"❌ 无效的参考URL: {ref_url}")
                     return
@@ -56,38 +57,108 @@ class WanReferenceVideoTool(Tool):
                 yield self.create_text_message("❌ 请输入提示词")
                 return
 
+            prompt_limit = 5000 if is_wan27 else 1500
             payload: dict[str, Any] = {
                 "model": model,
                 "input": {
-                    "reference_urls": processed_urls,
-                    "prompt": prompt[:1500],
+                    "prompt": prompt[:prompt_limit],
                 },
                 "parameters": {},
             }
 
+            input_params = payload["input"]
+            if is_wan27:
+                media: list[dict[str, str]] = []
+                for media_url in processed_urls:
+                    media_type = self._infer_media_type(media_url)
+                    media.append({"type": media_type, "url": media_url})
+
+                first_frame_image = self._process_media(
+                    tool_parameters.get("first_frame_image", "")
+                )
+                if first_frame_image:
+                    media.append({"type": "first_frame", "url": first_frame_image})
+
+                if len([m for m in media if m["type"] == "first_frame"]) > 1:
+                    yield self.create_text_message("❌ first_frame 最多支持1张")
+                    return
+
+                visual_reference_count = len(
+                    [
+                        m
+                        for m in media
+                        if m["type"] in {"reference_image", "reference_video"}
+                    ]
+                )
+                if visual_reference_count == 0:
+                    yield self.create_text_message("❌ wan2.7-r2v 至少需要1个参考图像或视频")
+                    return
+                if visual_reference_count > 5:
+                    yield self.create_text_message("❌ wan2.7-r2v 的图像+视频总数不能超过5")
+                    return
+
+                input_params["media"] = media
+
+                reference_voice = self._process_audio(tool_parameters.get("reference_voice"))
+                if reference_voice:
+                    input_params["reference_voice"] = reference_voice
+            else:
+                input_params["reference_urls"] = processed_urls
+
             negative_prompt = tool_parameters.get("negative_prompt", "").strip()
             if negative_prompt:
-                payload["input"]["negative_prompt"] = negative_prompt[:500]
+                input_params["negative_prompt"] = negative_prompt[:500]
 
             params = payload["parameters"]
             size = tool_parameters.get("size", "1920*1080").strip()
-            if size:
+            resolution = str(tool_parameters.get("resolution", "")).strip().upper()
+            ratio = str(tool_parameters.get("ratio", "")).strip()
+            if is_wan27:
+                if resolution:
+                    params["resolution"] = resolution
+                if ratio:
+                    params["ratio"] = ratio
+                if size and ("resolution" not in params or "ratio" not in params):
+                    mapped_resolution, mapped_ratio = self._map_size_to_wan27(size)
+                    if mapped_resolution and "resolution" not in params:
+                        params["resolution"] = mapped_resolution
+                    if mapped_ratio and "ratio" not in params:
+                        params["ratio"] = mapped_ratio
+            elif size:
                 params["size"] = size
+
             duration = tool_parameters.get("duration", 5)
             if duration is not None:
                 try:
                     duration_value = int(duration)
                     if duration_value < 2:
                         duration_value = 2
-                    if duration_value > 10:
+                    if is_wan27:
+                        has_reference_video = any(
+                            self._infer_media_type(media_url) == "reference_video"
+                            for media_url in processed_urls
+                        )
+                        max_duration = 10 if has_reference_video else 15
+                        if duration_value > max_duration:
+                            duration_value = max_duration
+                    elif duration_value > 10:
                         duration_value = 10
                     params["duration"] = duration_value
                 except (TypeError, ValueError):
                     pass
+
+            prompt_extend = tool_parameters.get("prompt_extend")
+            if prompt_extend is not None:
+                params["prompt_extend"] = prompt_extend
+
             shot_type = tool_parameters.get("shot_type", "single").strip()
-            if shot_type:
+            if shot_type and not is_wan27:
                 params["shot_type"] = shot_type
-            if tool_parameters.get("audio") is not None and model == "wan2.6-r2v-flash":
+            if (
+                tool_parameters.get("audio") is not None
+                and model == "wan2.6-r2v-flash"
+                and not is_wan27
+            ):
                 params["audio"] = tool_parameters.get("audio")
             if tool_parameters.get("watermark") is not None:
                 params["watermark"] = tool_parameters.get("watermark")
@@ -106,11 +177,22 @@ class WanReferenceVideoTool(Tool):
             }
 
             debug_payload = json.loads(json.dumps(payload))
-            for i, url in enumerate(debug_payload["input"]["reference_urls"]):
-                if len(url) > 200:
-                    debug_payload["input"]["reference_urls"][
-                        i
-                    ] = "data:video/...[Base64 Hidden]"
+            if "reference_urls" in debug_payload.get("input", {}):
+                for i, url in enumerate(debug_payload["input"]["reference_urls"]):
+                    if len(url) > 200:
+                        debug_payload["input"]["reference_urls"][
+                            i
+                        ] = "data:video/...[Base64 Hidden]"
+            if "media" in debug_payload.get("input", {}):
+                for item in debug_payload["input"]["media"]:
+                    if len(item.get("url", "")) > 200:
+                        item["url"] = "data:media/...[Base64 Hidden]"
+            if "reference_voice" in debug_payload.get("input", {}) and len(
+                debug_payload["input"]["reference_voice"]
+            ) > 200:
+                debug_payload["input"]["reference_voice"] = (
+                    "data:audio/...[Base64 Hidden]"
+                )
             logger.info("Request Payload: %s", json.dumps(debug_payload, ensure_ascii=False))
 
             yield self.create_text_message("🚀 参考生视频任务启动中...")
@@ -172,33 +254,117 @@ class WanReferenceVideoTool(Tool):
         )
 
     @staticmethod
-    def _process_video(video_data: Any) -> str:
-        if not video_data:
-            return ""
+    def _map_size_to_wan27(size: Any) -> tuple[str, str]:
+        normalized_size = str(size).strip().lower().replace(" ", "")
+        mapping = {
+            "1280*720": ("720P", "16:9"),
+            "720*1280": ("720P", "9:16"),
+            "960*960": ("720P", "1:1"),
+            "1104*832": ("720P", "4:3"),
+            "832*1104": ("720P", "3:4"),
+            "1920*1080": ("1080P", "16:9"),
+            "1080*1920": ("1080P", "9:16"),
+            "1440*1440": ("1080P", "1:1"),
+            "1648*1248": ("1080P", "4:3"),
+            "1248*1648": ("1080P", "3:4"),
+            "1088*832": ("720P", "4:3"),
+            "832*1088": ("720P", "3:4"),
+            "1632*1248": ("1080P", "4:3"),
+            "1248*1632": ("1080P", "3:4"),
+        }
+        return mapping.get(normalized_size, ("", ""))
 
-        if isinstance(video_data, str) and (
-            video_data.startswith("http") or video_data.startswith("data:")
+    @staticmethod
+    def _infer_media_type(media_url: str) -> str:
+        media_url_lower = str(media_url).lower()
+        if media_url_lower.startswith("data:video/"):
+            return "reference_video"
+        if media_url_lower.startswith("data:image/"):
+            return "reference_image"
+        if any(
+            media_url_lower.split("?")[0].endswith(ext)
+            for ext in (".mp4", ".mov", ".m4v", ".webm")
         ):
-            return video_data.strip()
+            return "reference_video"
+        return "reference_image"
 
-        video_bytes = None
-        if not isinstance(video_data, str) and hasattr(video_data, "blob"):
-            video_bytes = video_data.blob
-        elif not isinstance(video_data, str) and hasattr(video_data, "read"):
-            video_bytes = video_data.read()
-        elif isinstance(video_data, bytes):
-            video_bytes = video_data
-
-        if not video_bytes:
+    @staticmethod
+    def _process_media(media_data: Any) -> str:
+        if not media_data:
             return ""
 
-        if len(video_bytes) > 100 * 1024 * 1024:
-            logger.error("Video size exceeds 100MB limit")
+        if isinstance(media_data, str) and (
+            media_data.startswith("http")
+            or media_data.startswith("data:")
+            or media_data.startswith("oss://")
+        ):
+            return media_data.strip()
+
+        media_bytes = None
+        media_name = ""
+        if not isinstance(media_data, str) and hasattr(media_data, "blob"):
+            media_bytes = media_data.blob
+            media_name = str(getattr(media_data, "filename", "")).lower()
+        elif not isinstance(media_data, str) and hasattr(media_data, "read"):
+            media_bytes = media_data.read()
+            media_name = str(getattr(media_data, "name", "")).lower()
+        elif isinstance(media_data, bytes):
+            media_bytes = media_data
+        elif isinstance(media_data, str):
+            try:
+                media_bytes = base64.b64decode(media_data)
+            except Exception:
+                return ""
+
+        if not media_bytes:
+            return ""
+
+        if len(media_bytes) > 100 * 1024 * 1024:
+            logger.error("Media size exceeds 100MB limit")
             return ""
 
         try:
-            b64_str = base64.b64encode(video_bytes).decode("utf-8")
-            return f"data:video/mp4;base64,{b64_str}"
+            is_video = media_name.endswith((".mp4", ".mov", ".m4v", ".webm"))
+            if not media_name and media_bytes[:8].startswith((b"\x00\x00\x00", b"ftyp")):
+                is_video = True
+            mime = "video/mp4" if is_video else "image/png"
+            b64_str = base64.b64encode(media_bytes).decode("utf-8")
+            return f"data:{mime};base64,{b64_str}"
         except Exception as e:
-            logger.error("Video processing failed: %s", str(e))
+            logger.error("Media processing failed: %s", str(e))
             return ""
+
+    @staticmethod
+    def _process_audio(audio_data: Any) -> str:
+        if not audio_data:
+            return ""
+
+        if isinstance(audio_data, str) and (
+            audio_data.startswith("http")
+            or audio_data.startswith("data:")
+            or audio_data.startswith("oss://")
+        ):
+            return audio_data.strip()
+
+        audio_bytes = None
+        if not isinstance(audio_data, str) and hasattr(audio_data, "blob"):
+            audio_bytes = audio_data.blob
+        elif not isinstance(audio_data, str) and hasattr(audio_data, "read"):
+            audio_bytes = audio_data.read()
+        elif isinstance(audio_data, bytes):
+            audio_bytes = audio_data
+        elif isinstance(audio_data, str):
+            try:
+                audio_bytes = base64.b64decode(audio_data)
+            except Exception:
+                return ""
+
+        if not audio_bytes:
+            return ""
+        if len(audio_bytes) > 15 * 1024 * 1024:
+            logger.error("Audio size exceeds 15MB limit")
+            return ""
+
+        audio_format = "wav" if audio_bytes.startswith(b"RIFF") else "mp3"
+        b64_str = base64.b64encode(audio_bytes).decode("utf-8")
+        return f"data:audio/{audio_format};base64,{b64_str}"

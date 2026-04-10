@@ -8,7 +8,7 @@ description:
   human:
     en_US: "Generate video from reference videos using Tongyi Wanxiang API"
     zh_Hans: "使用通义万相模型从参考视频生成新视频"
-  llm: "Create video from reference videos with customizable parameters including model selection, prompt, reference videos, shot type, and more."
+  llm: "Create video from reference media with customizable parameters. Supports wan2.7-r2v (new media protocol) and wan2.6-r2v/wan2.6-r2v-flash (legacy protocol)."
 parameters:
   - name: model
     type: select
@@ -21,8 +21,12 @@ parameters:
       zh_Hans: "用于参考生视频的AI模型"
     llm_description: "AI model for reference video generation"
     form: form
-    default: "wan2.6-r2v"
+    default: "wan2.7-r2v"
     options:
+      - value: "wan2.7-r2v"
+        label:
+          en_US: "Wanxiang 2.7 Reference to Video"
+          zh_Hans: "万相2.7参考生视频"
       - value: "wan2.6-r2v"
         label:
           en_US: "Wanxiang 2.6 Reference to Video"
@@ -38,8 +42,8 @@ parameters:
       en_US: "Prompt"
       zh_Hans: "提示词"
     human_description:
-      en_US: "Text description for video generation (max 1500 characters)"
-      zh_Hans: "视频生成的文本描述（最多1500字符）"
+      en_US: "Text description for video generation (wan2.7 max 5000, wan2.6 max 1500)"
+      zh_Hans: "视频生成的文本描述（wan2.7 最多5000字符，wan2.6 最多1500字符）"
     llm_description: "Text prompt describing the video to generate"
     form: llm
   - name: negative_prompt
@@ -60,9 +64,31 @@ parameters:
       en_US: "Reference URLs"
       zh_Hans: "参考文件URL"
     human_description:
-      en_US: "Reference URLs (videos or images) separated by semicolons, max 5"
-      zh_Hans: "参考文件URL（视频或图片），用分号分隔，最多5个"
-    llm_description: "Reference URLs (videos or images) separated by semicolons"
+      en_US: "Reference URLs (videos/images) separated by semicolons. For wan2.7 they are auto-mapped to media[]; max 5 references."
+      zh_Hans: "参考文件URL（视频/图片）用分号分隔。wan2.7 会自动映射到 media[]；最多5个参考素材。"
+    llm_description: "Reference URLs (videos or images) separated by semicolons. Used as media references."
+    form: llm
+  - name: first_frame_image
+    type: string
+    required: false
+    label:
+      en_US: "First Frame Image"
+      zh_Hans: "首帧图像"
+    human_description:
+      en_US: "First frame image URL for wan2.7-r2v (optional, max 1)"
+      zh_Hans: "wan2.7-r2v 的首帧图像URL（可选，最多1张）"
+    llm_description: "Optional first frame image URL for wan2.7-r2v"
+    form: llm
+  - name: reference_voice
+    type: string
+    required: false
+    label:
+      en_US: "Reference Voice URL"
+      zh_Hans: "参考音色URL"
+    human_description:
+      en_US: "Reference voice URL for wan2.7-r2v (wav/mp3, optional)"
+      zh_Hans: "wan2.7-r2v 的参考音色URL（wav/mp3，可选）"
+    llm_description: "Optional reference voice URL for wan2.7-r2v"
     form: llm
   - name: size
     type: select
@@ -71,8 +97,8 @@ parameters:
       en_US: "Resolution"
       zh_Hans: "分辨率"
     human_description:
-      en_US: "Video resolution (width*height)"
-      zh_Hans: "视频分辨率（宽*高）"
+      en_US: "Video resolution in width*height. Used by wan2.6 models, also used as compatibility mapping input for wan2.7."
+      zh_Hans: "视频分辨率（宽*高）。用于 wan2.6，也可作为 wan2.7 的兼容映射输入。"
     llm_description: "Video resolution in width*height format"
     form: form
     default: "1920*1080"
@@ -124,13 +150,79 @@ parameters:
       en_US: "Duration (seconds)"
       zh_Hans: "时长(秒)"
     human_description:
-      en_US: "Duration of the generated video in seconds (2-10)"
-      zh_Hans: "生成视频的时长（秒，2-10）"
-    llm_description: "Duration of the generated video in seconds (2-10)"
+      en_US: "Duration in seconds. wan2.6: 2-10. wan2.7: 2-10 with reference video, otherwise 2-15."
+      zh_Hans: "生成视频时长。wan2.6: 2-10；wan2.7: 含参考视频时2-10，否则2-15。"
+    llm_description: "Duration of the generated video in seconds"
     form: form
     default: "5"
     min: 2
-    max: 10
+    max: 15
+  - name: resolution
+    type: select
+    required: false
+    label:
+      en_US: "Resolution Tier"
+      zh_Hans: "分辨率档位"
+    human_description:
+      en_US: "Resolution tier for wan2.7-r2v"
+      zh_Hans: "wan2.7-r2v 的分辨率档位"
+    llm_description: "Resolution tier for wan2.7-r2v"
+    form: form
+    default: "1080P"
+    options:
+      - value: "720P"
+        label:
+          en_US: "720P"
+          zh_Hans: "720P"
+      - value: "1080P"
+        label:
+          en_US: "1080P"
+          zh_Hans: "1080P"
+  - name: ratio
+    type: select
+    required: false
+    label:
+      en_US: "Aspect Ratio"
+      zh_Hans: "宽高比"
+    human_description:
+      en_US: "Aspect ratio for wan2.7-r2v"
+      zh_Hans: "wan2.7-r2v 的宽高比"
+    llm_description: "Aspect ratio for wan2.7-r2v"
+    form: form
+    default: "16:9"
+    options:
+      - value: "16:9"
+        label:
+          en_US: "16:9"
+          zh_Hans: "16:9"
+      - value: "9:16"
+        label:
+          en_US: "9:16"
+          zh_Hans: "9:16"
+      - value: "1:1"
+        label:
+          en_US: "1:1"
+          zh_Hans: "1:1"
+      - value: "4:3"
+        label:
+          en_US: "4:3"
+          zh_Hans: "4:3"
+      - value: "3:4"
+        label:
+          en_US: "3:4"
+          zh_Hans: "3:4"
+  - name: prompt_extend
+    type: boolean
+    required: false
+    label:
+      en_US: "Prompt Extend"
+      zh_Hans: "提示词智能改写"
+    human_description:
+      en_US: "Enable prompt intelligent rewriting"
+      zh_Hans: "启用提示词智能改写"
+    llm_description: "Whether to enable prompt intelligent rewriting"
+    form: form
+    default: true
   - name: shot_type
     type: select
     required: false
@@ -138,9 +230,9 @@ parameters:
       en_US: "Shot Type"
       zh_Hans: "镜头类型"
     human_description:
-      en_US: "Type of video shot"
-      zh_Hans: "视频镜头类型"
-    llm_description: "Type of video shot"
+      en_US: "Type of video shot (wan2.6 models only)"
+      zh_Hans: "视频镜头类型（仅 wan2.6 模型生效）"
+    llm_description: "Type of video shot for wan2.6 models"
     form: form
     default: "single"
     options:
@@ -160,7 +252,7 @@ parameters:
       zh_Hans: "自动音频"
     human_description:
       en_US: "Automatically add audio to the generated video (wan2.6-r2v-flash only)"
-      zh_Hans: "为生成的视频自动添加音频（仅wan2.6-r2v-flash支持）"
+      zh_Hans: "为生成的视频自动添加音频（仅 wan2.6-r2v-flash 支持）"
     llm_description: "Whether to automatically add audio (wan2.6-r2v-flash only)"
     form: form
     default: true

@@ -142,10 +142,11 @@ Generate video from first and last frame images.
 
 #### Reference Video (wan_reference_video)
 Generate videos based on reference video style.
-- **Supported Models**: wan2.6-r2v, wan2.6-r2v-flash
+- **Supported Models**: wan2.7-r2v, wan2.6-r2v, wan2.6-r2v-flash
 - **Features**:
-  - Reference videos or images input (up to 5)
-  - Duration: 2-10 seconds
+  - Multi-modal references (images/videos) input (up to 5)
+  - Optional first-frame and reference voice support (wan2.7-r2v)
+  - Duration: 2-10 seconds (or up to 15s for wan2.7 without reference video)
   - Resolution: 720P or 1080P (multiple aspect ratios)
   - Synchronized audio generation (wan2.6-r2v-flash only)
   - Single/Multi shot support
@@ -325,13 +326,17 @@ Generate video from first and last frame images.
 #### 10. Reference Video
 Generate videos based on reference video style.
 - **Parameters**:
-  - `model`: Model version (default: wan2.6-r2v)
-  - `prompt`: Text description (required, max 1500 chars)
-  - `reference_urls`: Reference URLs (videos or images, max 5)
-  - `size`: Video resolution (default: 1920*1080)
-  - `duration`: Duration in seconds (2-10, default: 5)
-  - `shot_type`: Single or multi shot (default: single)
+  - `model`: Model version (default: wan2.7-r2v)
+  - `prompt`: Text description (required, wan2.7 max 5000 / wan2.6 max 1500)
+  - `reference_urls`: Reference URLs (videos or images, semicolon-separated, max 5)
+  - `first_frame_image`: Optional first frame image URL (wan2.7-r2v)
+  - `reference_voice`: Optional reference voice URL (wan2.7-r2v)
+  - `size`: Legacy resolution in `width*height` (wan2.6; also mapped for wan2.7 compatibility)
+  - `resolution` / `ratio`: Native wan2.7 resolution tier and aspect ratio
+  - `duration`: Duration in seconds (wan2.6: 2-10; wan2.7: 2-10 or up to 15 without reference video)
+  - `shot_type`: Single or multi shot (wan2.6)
   - `audio`: Auto generate audio (default: true, wan2.6-r2v-flash only)
+  - `prompt_extend`: Enable prompt intelligent rewriting (default: true)
   - `watermark`: Enable/disable watermark (default: true)
 
 #### 11. Video Query
