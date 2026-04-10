@@ -4,12 +4,21 @@ A powerful Dify plugin providing comprehensive AI-powered image and video genera
 
 ## Version Information
 
-- **Current Version**: v0.0.1
-- **Release Date**: 2026-02-16
+- **Current Version**: v0.0.2
+- **Release Date**: 2026-04-11
 - **Compatibility**: Dify Plugin Framework
 - **Python Version**: 3.12
 
 ### Version History
+- **v0.0.2** (2026-04-11): 
+  - Added new **Video Continuation** tool (wan_video_continue) - Continue video from existing clips using wan2.7-i2v
+  - Added wan2.7-t2v model support for Text to Video
+  - Added wan2.7-i2v model support for Image to Video with multi-modal inputs (first-frame, first+last frame, video continuation)
+  - Added wan2.7-r2v model support for Reference Video with enhanced features
+  - Added wan2.7-image-pro/wan2.7-image models for Image to Image with sequential grouped output mode
+  - Added **qwen-image2.0** series models: qwen-image-2.0-pro, qwen-image-2.0, qwen-image-edit-max, qwen-image-edit-plus
+  - Enhanced resolution control with new `resolution + ratio` parameters for wan2.7 models
+  - Added tags for plugin marketplace (productivity, image, videos)
 - **v0.0.1** (2026-02-16): Initial release with image and video generation capabilities
 
 ## Quick Start
@@ -22,7 +31,7 @@ A powerful Dify plugin providing comprehensive AI-powered image and video genera
 <img width="362" height="958" alt="CN" src="https://github.com/user-attachments/assets/240b3665-529f-4dc2-b572-7f9f7e277024" /><img width="318" height="954" alt="EN" src="https://github.com/user-attachments/assets/ea3b8fdb-379d-4159-a175-77edb3844db5" />
 
 - **Multiple Generation Modes**: Text-to-image, text-to-video, image-to-image, image-to-video, image translation
-- **Latest AI Models**: Supports wan2.6, qwen-image-max, qwen-image-plus, z-image-turbo for images; wan2.6-t2v, wan2.5-t2v-preview, wan2.2-t2v-plus for videos
+- **Latest AI Models**: Supports wan2.7, qwen-image2.0, Z-image, wan2.6, wan2.5, wan2.2 for images; wan2.7-t2v, wan2.6-t2v, wan2.5-t2v-preview, wan2.2-t2v-plus for videos
 - **Flexible Image Sizes**: Multiple aspect ratios from 1:1 to 21:9 with various resolutions
 - **Video Generation**: Create videos with customizable duration (2-15 seconds) and synchronized audio
 - **Image Translation**: Translate text in images with AI-powered OCR and translation (14+ languages)
@@ -62,7 +71,7 @@ Generate images from text and reference images using Wanxiang models.
 
 #### Qwen Text to Image (qwen_text_2_image)
 Generate images using Qwen image models.
-- **Supported Models**: qwen-image-max, qwen-image-max-2025-12-30, qwen-image-plus, qwen-image-plus-2026-01-09
+- **Supported Models**: qwen-image-2.0-pro, qwen-image-2.0, qwen-image-2.0-pro-2026-03-03, qwen-image-2.0-2026-03-03, qwen-image-max, qwen-image-plus, qwen-image
 - **Features**:
   - High quality image generation
   - Multiple aspect ratios (16:9, 4:3, 1:1, 3:4, 9:16)
@@ -73,7 +82,7 @@ Generate images using Qwen image models.
 
 #### Qwen Image to Image (qwen_image_2_image)
 Generate images from text and reference images using Qwen models.
-- **Supported Models**: qwen-image-edit-max, qwen-image-edit-max-2026-01-16, qwen-image-edit-plus, qwen-image-edit-plus-2025-12-15, qwen-image-edit, qwen-image-edit-plus-2025-10-30
+- **Supported Models**: qwen-image-2.0-pro, qwen-image-2.0, qwen-image-edit-max, qwen-image-edit-max-2026-01-16, qwen-image-edit-plus, qwen-image-edit, qwen-image-edit-plus-2025-10-30
 - **Features**:
   - Reference image guided generation (1-3 images)
   - Multiple aspect ratios (1:1, 2:3, 3:2, 3:4, 4:3, 9:16, 16:9, 21:9)
@@ -239,7 +248,7 @@ Generate images from text and reference images.
 Generate images using Qwen models.
 - **Parameters**:
   - `prompt`: Text description (required)
-  - `model`: Model version (default: qwen-image-max)
+  - `model`: Model version (default: qwen-image-2.0-pro)
   - `size`: Image size (default: 1664*928)
   - `negative_prompt`: Describe what you don't want
   - `prompt_extend`: Enable prompt intelligent rewriting
@@ -251,7 +260,7 @@ Generate images from text and reference images using Qwen models.
 - **Parameters**:
   - `prompt`: Text description (required)
   - `images`: Reference image files (1-3 images, required)
-  - `model`: Model version (default: qwen-image-edit-max)
+  - `model`: Model version (default: qwen-image-2.0-pro)
   - `size`: Image size (default: 1024*1024)
   - `n`: Number of images to generate (1-6, default: 3)
   - `prompt_extend`: Enable prompt intelligent rewriting

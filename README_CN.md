@@ -4,12 +4,21 @@
 
 ## 版本信息
 
-- **当前版本**: v0.0.1
-- **发布日期**: 2026-02-16
+- **当前版本**: v0.0.2
+- **发布日期**: 2026-04-11
 - **兼容性**: Dify 插件框架
 - **Python 版本**: 3.12
 
 ### 版本历史
+- **v0.0.2** (2026-04-11): 
+  - 新增 **视频续写** 工具 (wan_video_continue) - 使用 wan2.7-i2v 从现有片段继续生成视频
+  - 新增 wan2.7-t2v 模型支持（文生视频）
+  - 新增 wan2.7-i2v 模型支持（图生视频），支持多模态输入（首帧、首尾帧、视频续写）
+  - 新增 wan2.7-r2v 模型支持（参考视频），增强功能
+  - 新增 wan2.7-image-pro/wan2.7-image 模型支持（图生图），支持组图输出模式
+  - 新增 **qwen-image2.0** 系列模型：qwen-image-2.0-pro、qwen-image-2.0、qwen-image-edit-max、qwen-image-edit-plus
+  - 增强分辨率控制，wan2.7 模型新增 `resolution + ratio` 参数
+  - 新增插件市场标签（productivity, image, videos）
 - **v0.0.1** (2026-02-16): 初始版本，包含图像和视频生成功能
 
 ## 快速开始
@@ -22,7 +31,7 @@
 <img width="362" height="958" alt="CN" src="https://github.com/user-attachments/assets/240b3665-529f-4dc2-b572-7f9f7e277024" /><img width="318" height="954" alt="EN" src="https://github.com/user-attachments/assets/ea3b8fdb-379d-4159-a175-77edb3844db5" />
 
 - **多种生成模式**: 文生图、文生视频、图生图、图生视频、图像翻译
-- **最新 AI 模型**: 支持图像生成使用 wan2.6、qwen-image-max、qwen-image-plus、z-image-turbo；视频生成使用 wan2.6-t2v、wan2.5-t2v-preview、wan2.2-t2v-plus
+- **最新 AI 模型**: 支持图像生成使用 wan2.7、qwen-image2.0、Z-image、wan2.6、wan2.5、wan2.2；视频生成使用 wan2.7-t2v、wan2.6-t2v、wan2.5-t2v-preview、wan2.2-t2v-plus
 - **灵活的图像尺寸**: 多种宽高比，从 1:1 到 21:9，支持多种分辨率
 - **视频生成**: 创建可自定义时长（2-15秒）的视频，支持同步音频生成
 - **图像翻译**: AI 驱动的 OCR 和翻译功能（支持14+种语言）
@@ -62,7 +71,7 @@
 
 #### 通义千问文生图 (qwen_text_2_image)
 使用通义千问图像模型生成图像。
-- **支持模型**: qwen-image-max, qwen-image-max-2025-12-30, qwen-image-plus, qwen-image-plus-2026-01-09
+- **支持模型**: qwen-image-2.0-pro, qwen-image-2.0, qwen-image-2.0-pro-2026-03-03, qwen-image-2.0-2026-03-03, qwen-image-max, qwen-image-plus, qwen-image
 - **功能特性**:
   - 高质量图像生成
   - 多种宽高比（16:9、4:3、1:1、3:4、9:16）
@@ -73,7 +82,7 @@
 
 #### 通义千问图生图 (qwen_image_2_image)
 使用通义千问模型根据文本和参考图像生成图像。
-- **支持模型**: qwen-image-edit-max, qwen-image-edit-max-2026-01-16, qwen-image-edit-plus, qwen-image-edit-plus-2025-12-15, qwen-image-edit, qwen-image-edit-plus-2025-10-30
+- **支持模型**: qwen-image-2.0-pro, qwen-image-2.0, qwen-image-edit-max, qwen-image-edit-max-2026-01-16, qwen-image-edit-plus, qwen-image-edit, qwen-image-edit-plus-2025-10-30
 - **功能特性**:
   - 参考图像引导生成（1-3张）
   - 多种宽高比（1:1、2:3、3:2、3:4、4:3、9:16、16:9、21:9）
@@ -239,7 +248,7 @@ AI 驱动的 OCR 和翻译功能，翻译图像中的文字。
 使用通义千问模型生成图像。
 - **参数**:
   - `prompt`: 文本描述（必需）
-  - `model`: 模型版本（默认：qwen-image-max）
+  - `model`: 模型版本（默认：qwen-image-2.0-pro）
   - `size`: 图像尺寸（默认：1664*928）
   - `negative_prompt`: 描述不希望出现的内容
   - `prompt_extend`: 启用提示词智能改写
@@ -251,7 +260,7 @@ AI 驱动的 OCR 和翻译功能，翻译图像中的文字。
 - **参数**:
   - `prompt`: 文本描述（必需）
   - `images`: 参考图片文件（1-3张，必需）
-  - `model`: 模型版本（默认：qwen-image-edit-max）
+  - `model`: 模型版本（默认：qwen-image-2.0-pro）
   - `size`: 图像尺寸（默认：1024*1024）
   - `n`: 生成图像数量（1-6，默认：3）
   - `prompt_extend`: 启用提示词智能改写
