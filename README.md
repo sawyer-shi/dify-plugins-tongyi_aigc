@@ -28,6 +28,7 @@ A powerful Dify plugin providing comprehensive AI-powered image and video genera
 - **Image Translation**: Translate text in images with AI-powered OCR and translation (14+ languages)
 - **First-Last Frame Video**: Create videos from first and last frame images
 - **Reference Video**: Generate videos based on reference video style
+- **Video Continuation**: Continue existing clips with wan2.7-i2v
 - **Batch Generation**: Generate multiple images in a single request (up to 6 images)
 - **Watermark Control**: Optional watermark for content authenticity
 
@@ -149,6 +150,14 @@ Generate videos based on reference video style.
   - Synchronized audio generation (wan2.6-r2v-flash only)
   - Single/Multi shot support
   - Prompt intelligent rewriting
+
+#### Video Continuation (wan_video_continue)
+Continue a video from an existing first clip.
+- **Supported Models**: wan2.7-i2v
+- **Features**:
+  - Supports `first_clip` and `first_clip + last_frame`
+  - Duration 2-15 seconds and 720P/1080P resolution
+  - Prompt intelligent rewriting and watermark control
 
 #### Video Query (wan_video_query)
 Query the status and results of video generation tasks.
