@@ -23,6 +23,10 @@ parameters:
     form: form
     default: "wan2.2-kf2v-flash"
     options:
+      - value: "wan2.7-i2v"
+        label:
+          en_US: "Wanxiang 2.7 Image to Video"
+          zh_Hans: "万相2.7图生视频"
       - value: "wan2.2-kf2v-flash"
         label:
           en_US: "Wanxiang 2.2 First/Last Frame"
@@ -34,8 +38,8 @@ parameters:
       en_US: "Prompt"
       zh_Hans: "提示词"
     human_description:
-      en_US: "Text description for video generation (required when not using template)"
-      zh_Hans: "视频生成的文本描述（非模板模式必填）"
+      en_US: "Text description for video generation (recommended for wan2.7-i2v; required for wan2.2 non-template mode)"
+      zh_Hans: "视频生成的文本描述（wan2.7-i2v 推荐填写；wan2.2 非模板模式必填）"
     llm_description: "Text prompt describing the video to generate"
     form: llm
   - name: negative_prompt
@@ -70,6 +74,17 @@ parameters:
       en_US: "Upload the last frame image (required when not using template)"
       zh_Hans: "上传尾帧图片（非模板模式必填）"
     llm_description: "Upload the last frame image"
+    form: llm
+  - name: audio_url
+    type: string
+    required: false
+    label:
+      en_US: "Audio URL"
+      zh_Hans: "音频URL"
+    human_description:
+      en_US: "Optional audio URL, mainly for wan2.7-i2v first+last+audio mode"
+      zh_Hans: "可选音频URL，主要用于 wan2.7-i2v 的首尾帧+音频模式"
+    llm_description: "Optional audio URL"
     form: llm
   - name: template
     type: string
