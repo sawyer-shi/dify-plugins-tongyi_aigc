@@ -5,12 +5,12 @@ A powerful Dify plugin providing comprehensive AI-powered image and video genera
 ## Version Information
 
 - **Current Version**: v0.0.2
-- **Release Date**: 2026-04-11
+- **Release Date**: 2026-04-12
 - **Compatibility**: Dify Plugin Framework
 - **Python Version**: 3.12
 
 ### Version History
-- **v0.0.2** (2026-04-11): 
+- **v0.0.2** (2026-04-12): 
   - Added new **Video Continuation** tool (wan_video_continue) - Continue video from existing clips using wan2.7-i2v
   - Added wan2.7-t2v model support for Text to Video
   - Added wan2.7-i2v model support for Image to Video with multi-modal inputs (first-frame, first+last frame, video continuation)
@@ -47,13 +47,15 @@ A powerful Dify plugin providing comprehensive AI-powered image and video genera
 
 #### Wan Text to Image (wan_text_2_image)
 Generate images from text descriptions using Wanxiang models.
-- **Supported Models**: wan2.6-t2i
+- **Supported Models**: wan2.7-image-pro, wan2.7-image, wan2.6-t2i
 - **Features**:
-  - Multiple aspect ratios (1:1, 4:3, 3:4, 16:9, 9:16)
-  - High resolution output (up to 1696*960)
+  - Multiple aspect ratios (1:1, 3:2, 2:3, 16:9, 9:16)
+  - High resolution output (up to 4K for wan2.7-image-pro)
   - Optional watermark
+  - Sequential grouped image output mode (wan2.7)
+  - Thinking mode for enhanced reasoning (wan2.7)
   - Prompt intelligent rewriting
-  - Batch generation (1-4 images)
+  - Batch generation (1-4 images; up to 12 in wan2.7 sequential mode)
   - Negative prompt support
 
 #### Wan Image to Image (wan_image_2_image)
@@ -222,11 +224,13 @@ Query image translation task status and results.
 #### 1. Wan Text to Image
 Generate images from text descriptions.
 - **Parameters**:
-  - `model`: Model version (default: wan2.6-t2i)
-  - `prompt`: Text description of the image (required, <=2100 chars)
-  - `negative_prompt`: Describe what you don't want (<=500 chars)
-  - `size`: Image size (default: 1280*1280)
-  - `n`: Number of images to generate (1-4, default: 3)
+  - `model`: Model version (default: wan2.7-image-pro)
+  - `prompt`: Text description of the image (required, wan2.7 <=5000 chars, wan2.6 <=2100 chars)
+  - `negative_prompt`: Describe what you don't want (<=500 chars, wan2.6 compatibility)
+  - `size`: Image size (default: 2K, supports 1K/2K/4K or specific resolutions like 1024*1024)
+  - `n`: Number of images to generate (1-4, up to 12 with wan2.7 sequential mode)
+  - `enable_sequential`: Enable grouped image generation for wan2.7 (default: false)
+  - `thinking_mode`: Enable thinking mode for enhanced reasoning on wan2.7 (default: true)
   - `prompt_extend`: Enable prompt intelligent rewriting (default: true)
   - `watermark`: Enable/disable watermark (default: true)
   - `seed`: Random seed for reproducibility
