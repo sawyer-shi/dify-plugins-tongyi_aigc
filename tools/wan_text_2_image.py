@@ -11,11 +11,23 @@ from dify_plugin.entities.tool import ToolInvokeMessage
 
 logger = logging.getLogger(__name__)
 
+WAN_27_MODELS = {"wan2.7-image-pro", "wan2.7-image"}
+WAN_26_MODELS = {"wan2.6-t2i"}
+SUPPORTED_MODELS = WAN_27_MODELS | WAN_26_MODELS
+
+WAN_26_SIZE_OPTIONS = {
+    "1280*1280",
+    "1104*1472",
+    "1472*1104",
+    "960*1696",
+    "1696*960",
+}
+
 
 class WanText2ImageTool(Tool):
     def _invoke(self, tool_parameters: dict[str, Any]) -> Generator[ToolInvokeMessage]:
         """
-        Tongyi Wanxiang text-to-image tool (sync for wan2.6).
+        Tongyi Wanxiang text-to-image tool (sync for wan2.6 and wan2.7).
         """
         logger.info("Starting wan text-to-image task")
 
@@ -36,6 +48,14 @@ class WanText2ImageTool(Tool):
                 "Content-Type": "application/json",
             }
 
+            model = tool_parameters.get("model", "wan2.7-image-pro")
+            if model not in SUPPORTED_MODELS:
+                msg = f"❌ 不支持的模型: {model}"
+                logger.warning(msg)
+                yield self.create_text_message(msg)
+                return
+            is_wan27 = model in WAN_27_MODELS
+
             prompt = tool_parameters.get("prompt", "").strip()
             if not prompt:
                 msg = "❌ 请输入提示词"
@@ -43,24 +63,38 @@ class WanText2ImageTool(Tool):
                 yield self.create_text_message(msg)
                 return
 
-            if len(prompt) > 2100:
-                prompt = prompt[:2100]
+            prompt_limit = 5000 if is_wan27 else 2100
+            if len(prompt) > prompt_limit:
+                prompt = prompt[:prompt_limit]
 
-            model = "wan2.6-t2i"
             negative_prompt = tool_parameters.get("negative_prompt", "")
             if negative_prompt:
                 negative_prompt = negative_prompt[:500]
             prompt_extend = tool_parameters.get("prompt_extend")
             watermark = tool_parameters.get("watermark")
             n = tool_parameters.get("n")
-            size = tool_parameters.get("size", "1280*1280")
+            size = tool_parameters.get("size", "2K" if is_wan27 else "1280*1280")
             seed = tool_parameters.get("seed")
+            enable_sequential = tool_parameters.get("enable_sequential")
+            thinking_mode = tool_parameters.get("thinking_mode")
 
             if not size:
-                size = "1280*1280"
+                size = "2K" if is_wan27 else "1280*1280"
+
+            if not self._is_valid_size(model=model, size=size, enable_sequential=bool(enable_sequential)):
+                if is_wan27:
+                    if bool(enable_sequential):
+                        msg = "❌ wan2.7 组图模式仅支持 1K/2K，或总像素不超过 2048*2048 的宽*高"
+                    else:
+                        msg = "❌ wan2.7 文生图支持 1K/2K/4K，或符合范围的宽*高"
+                else:
+                    msg = "❌ wan2.6-t2i 仅支持固定尺寸：1280*1280/1104*1472/1472*1104/960*1696/1696*960"
+                logger.warning(msg)
+                yield self.create_text_message(msg)
+                return
 
             yield self.create_text_message("🚀 文生图任务启动中...")
-            yield self.create_text_message("🤖 使用模型: wan2.6-t2i")
+            yield self.create_text_message(f"🤖 使用模型: {model}")
             yield self.create_text_message(
                 f"📝 提示词: {prompt[:50]}{'...' if len(prompt) > 50 else ''}"
             )
@@ -82,12 +116,17 @@ class WanText2ImageTool(Tool):
                 "parameters": {},
             }
 
-            if negative_prompt:
-                payload["parameters"]["negative_prompt"] = negative_prompt
-            if prompt_extend is not None:
-                payload["parameters"]["prompt_extend"] = prompt_extend
+            if not is_wan27:
+                if negative_prompt:
+                    payload["parameters"]["negative_prompt"] = negative_prompt
+                if prompt_extend is not None:
+                    payload["parameters"]["prompt_extend"] = prompt_extend
+            elif enable_sequential is not None:
+                payload["parameters"]["enable_sequential"] = bool(enable_sequential)
+
             if watermark is not None:
                 payload["parameters"]["watermark"] = watermark
+
             if n is not None:
                 try:
                     n_value = int(n)
@@ -96,10 +135,18 @@ class WanText2ImageTool(Tool):
                 if n_value is not None:
                     if n_value < 1:
                         n_value = 1
-                    if n_value > 4:
+                    if is_wan27 and payload["parameters"].get("enable_sequential"):
+                        if n_value > 12:
+                            n_value = 12
+                    elif n_value > 4:
                         n_value = 4
                     payload["parameters"]["n"] = n_value
+
             payload["parameters"]["size"] = size
+
+            if is_wan27 and thinking_mode is not None and not payload["parameters"].get("enable_sequential"):
+                payload["parameters"]["thinking_mode"] = bool(thinking_mode)
+
             if seed is not None:
                 try:
                     payload["parameters"]["seed"] = int(seed)
@@ -183,3 +230,47 @@ class WanText2ImageTool(Tool):
             error_msg = f"❌ 生成图像时出现未预期错误: {str(e)}"
             logger.exception(error_msg)
             yield self.create_text_message(error_msg)
+
+    @staticmethod
+    def _is_valid_size(model: str, size: str, enable_sequential: bool) -> bool:
+        if model in WAN_26_MODELS:
+            return size in WAN_26_SIZE_OPTIONS
+
+        if model == "wan2.7-image":
+            if size in {"1K", "2K"}:
+                return True
+            return WanText2ImageTool._is_valid_custom_size(size, min_pixels=768 * 768, max_pixels=2048 * 2048)
+
+        if model == "wan2.7-image-pro":
+            if enable_sequential:
+                if size in {"1K", "2K"}:
+                    return True
+                return WanText2ImageTool._is_valid_custom_size(size, min_pixels=768 * 768, max_pixels=2048 * 2048)
+
+            if size in {"1K", "2K", "4K"}:
+                return True
+            return WanText2ImageTool._is_valid_custom_size(size, min_pixels=768 * 768, max_pixels=4096 * 4096)
+
+        return False
+
+    @staticmethod
+    def _is_valid_custom_size(size: str, min_pixels: int, max_pixels: int) -> bool:
+        if not size or "*" not in size:
+            return False
+
+        try:
+            width_text, height_text = size.split("*", 1)
+            width = int(width_text)
+            height = int(height_text)
+        except (TypeError, ValueError):
+            return False
+
+        if width <= 0 or height <= 0:
+            return False
+
+        ratio = width / height
+        if ratio < 1 / 8 or ratio > 8:
+            return False
+
+        pixels = width * height
+        return min_pixels <= pixels <= max_pixels

@@ -21,8 +21,16 @@ parameters:
       zh_Hans: "用于文生图的AI模型"
     llm_description: "AI model for text-to-image generation"
     form: form
-    default: "wan2.6-t2i"
+    default: "wan2.7-image-pro"
     options:
+      - value: "wan2.7-image-pro"
+        label:
+          en_US: "Wanxiang 2.7 Image Pro"
+          zh_Hans: "万相2.7 图像专业版"
+      - value: "wan2.7-image"
+        label:
+          en_US: "Wanxiang 2.7 Image"
+          zh_Hans: "万相2.7 图像"
       - value: "wan2.6-t2i"
         label:
           en_US: "Wanxiang 2.6 Text to Image"
@@ -34,8 +42,8 @@ parameters:
       en_US: Prompt
       zh_Hans: 提示词
     human_description:
-      en_US: "Text description of the image you want to generate (<=2100 chars)"
-      zh_Hans: "您想要生成的图像的文本描述（<=2100字符）"
+      en_US: "Text description of the image you want to generate (wan2.7 <=5000 chars, wan2.6 <=2100 chars)"
+      zh_Hans: "您想要生成的图像的文本描述（wan2.7 <=5000字符，wan2.6 <=2100字符）"
     llm_description: "Text description of the image to generate"
     form: llm
   - name: negative_prompt
@@ -45,9 +53,9 @@ parameters:
       en_US: Negative Prompt
       zh_Hans: 反向提示词
     human_description:
-      en_US: "Describe what you don't want in the image (<=500 chars)"
-      zh_Hans: "描述不希望在图像中出现的内容（<=500字符）"
-    llm_description: "Negative prompt to restrict image content"
+      en_US: "Describe what you don't want in the image (<=500 chars, wan2.6 compatibility option)"
+      zh_Hans: "描述不希望在图像中出现的内容（<=500字符，wan2.6兼容参数）"
+    llm_description: "Negative prompt for wan2.6 compatibility"
     form: llm
   - name: size
     type: select
@@ -56,32 +64,64 @@ parameters:
       en_US: Image Size
       zh_Hans: 图像尺寸
     human_description:
-      en_US: "Size of the generated image"
-      zh_Hans: "生成图像的尺寸"
-    llm_description: "Size of the generated image"
+      en_US: "Image size. wan2.7 supports 1K/2K/4K or width*height; wan2.6 supports fixed sizes"
+      zh_Hans: "图像尺寸。wan2.7支持1K/2K/4K或宽*高；wan2.6仅支持固定尺寸"
+    llm_description: "Image size, such as 2K/1K/4K/1024*1024"
     form: form
-    default: "1280*1280"
+    default: "2K"
     options:
+      - value: "1K"
+        label:
+          en_US: "1K"
+          zh_Hans: "1K"
+      - value: "2K"
+        label:
+          en_US: "2K"
+          zh_Hans: "2K"
+      - value: "4K"
+        label:
+          en_US: "4K (wan2.7-image-pro text only)"
+          zh_Hans: "4K（仅wan2.7-image-pro文生图）"
+      - value: "1024*1024"
+        label:
+          en_US: "1:1 (1024*1024)"
+          zh_Hans: "1:1 (1024*1024)"
+      - value: "1536*1024"
+        label:
+          en_US: "3:2 (1536*1024)"
+          zh_Hans: "3:2 (1536*1024)"
+      - value: "1024*1536"
+        label:
+          en_US: "2:3 (1024*1536)"
+          zh_Hans: "2:3 (1024*1536)"
+      - value: "1920*1080"
+        label:
+          en_US: "16:9 (1920*1080)"
+          zh_Hans: "16:9 (1920*1080)"
+      - value: "1080*1920"
+        label:
+          en_US: "9:16 (1080*1920)"
+          zh_Hans: "9:16 (1080*1920)"
       - value: "1280*1280"
         label:
-          en_US: "1:1 (1280*1280)"
-          zh_Hans: "1:1 (1280*1280)"
+          en_US: "1:1 (1280*1280, wan2.6)"
+          zh_Hans: "1:1 (1280*1280，wan2.6)"
       - value: "1104*1472"
         label:
-          en_US: "3:4 (1104*1472)"
-          zh_Hans: "3:4 (1104*1472)"
+          en_US: "3:4 (1104*1472, wan2.6)"
+          zh_Hans: "3:4 (1104*1472，wan2.6)"
       - value: "1472*1104"
         label:
-          en_US: "4:3 (1472*1104)"
-          zh_Hans: "4:3 (1472*1104)"
+          en_US: "4:3 (1472*1104, wan2.6)"
+          zh_Hans: "4:3 (1472*1104，wan2.6)"
       - value: "960*1696"
         label:
-          en_US: "9:16 (960*1696)"
-          zh_Hans: "9:16 (960*1696)"
+          en_US: "9:16 (960*1696, wan2.6)"
+          zh_Hans: "9:16 (960*1696，wan2.6)"
       - value: "1696*960"
         label:
-          en_US: "16:9 (1696*960)"
-          zh_Hans: "16:9 (1696*960)"
+          en_US: "16:9 (1696*960, wan2.6)"
+          zh_Hans: "16:9 (1696*960，wan2.6)"
   - name: n
     type: number
     required: false
@@ -89,13 +129,37 @@ parameters:
       en_US: Image Count
       zh_Hans: 图片数量
     human_description:
-      en_US: "Number of images to generate (1-4)"
-      zh_Hans: "生成图像数量（1-4）"
-    llm_description: "Number of images to generate (1-4)"
+      en_US: "Number of images (1-4; up to 12 with wan2.7 sequential mode)"
+      zh_Hans: "生成图像数量（1-4；wan2.7组图模式最高12）"
+    llm_description: "Number of images (1-4, or up to 12 with wan2.7 sequential mode)"
     form: form
     default: 3
     min: 1
-    max: 4
+    max: 12
+  - name: enable_sequential
+    type: boolean
+    required: false
+    label:
+      en_US: Enable Sequential (wan2.7)
+      zh_Hans: 启用组图模式(wan2.7)
+    human_description:
+      en_US: "Enable grouped image generation. Effective for wan2.7 models."
+      zh_Hans: "启用组图生成，仅对 wan2.7 模型生效。"
+    llm_description: "Enable sequential grouped image generation for wan2.7"
+    form: form
+    default: false
+  - name: thinking_mode
+    type: boolean
+    required: false
+    label:
+      en_US: Thinking Mode (wan2.7)
+      zh_Hans: 思考模式(wan2.7)
+    human_description:
+      en_US: "Enhance reasoning for better quality. Effective on wan2.7 text-only and non-sequential mode."
+      zh_Hans: "提升推理增强画质。仅在 wan2.7 文生图且非组图模式下生效。"
+    llm_description: "Enable thinking mode for wan2.7 text-only generation"
+    form: form
+    default: true
   - name: prompt_extend
     type: boolean
     required: false
@@ -103,9 +167,9 @@ parameters:
       en_US: Prompt Extend
       zh_Hans: 提示词智能改写
     human_description:
-      en_US: "Enable AI-powered prompt optimization"
-      zh_Hans: "启用提示词智能改写"
-    llm_description: "Whether to enable prompt intelligent rewriting"
+      en_US: "Enable AI-powered prompt optimization (wan2.6 compatibility option)"
+      zh_Hans: "启用提示词智能改写（wan2.6兼容参数）"
+    llm_description: "Prompt extend option for wan2.6 compatibility"
     form: form
     default: true
   - name: watermark
