@@ -36,6 +36,7 @@ tools:
   - tools/wan_reference_video.yaml
   - tools/wan_video_continue.yaml
   - tools/wan_video_query.yaml
+  - tools/happyhorse_text_2_video.yaml
 extra:
   python:
     source: provider/tongyi_aigc.py
