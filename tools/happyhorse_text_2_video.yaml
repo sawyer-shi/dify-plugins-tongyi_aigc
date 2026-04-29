@@ -11,7 +11,7 @@ description:
   llm: "Create video from text using HappyHorse model with customizable parameters like resolution, ratio, duration, watermark, and seed."
 parameters:
   - name: model
-    type: string
+    type: select
     required: true
     label:
       en_US: "Model"
@@ -22,6 +22,11 @@ parameters:
     llm_description: "AI model for text-to-video generation"
     form: form
     default: "happyhorse-1.0-t2v"
+    options:
+      - value: "happyhorse-1.0-t2v"
+        label:
+          en_US: "HappyHorse 1.0 Text to Video"
+          zh_Hans: "HappyHorse 1.0 文生视频"
   - name: prompt
     type: string
     required: true
@@ -88,7 +93,7 @@ parameters:
           en_US: "3:4"
           zh_Hans: "3:4"
   - name: duration
-    type: string
+    type: number
     required: false
     label:
       en_US: "Duration (seconds)"
@@ -98,7 +103,7 @@ parameters:
       zh_Hans: "生成视频的时长（秒），取值范围[3, 15]。"
     llm_description: "Duration of the generated video in seconds"
     form: form
-    default: "5"
+    default: 5
   - name: watermark
     type: boolean
     required: false
