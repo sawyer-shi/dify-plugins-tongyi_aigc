@@ -63,7 +63,10 @@ class HappyHorseText2VideoTool(Tool):
                 try:
                     params["duration"] = int(duration)
                 except (TypeError, ValueError):
-                    pass
+                    msg = f"❌ 无效的 duration 参数: {duration}"
+                    logger.error(msg)
+                    yield self.create_text_message(msg)
+                    return
             
             watermark = tool_parameters.get("watermark")
             if watermark is not None:
@@ -74,14 +77,17 @@ class HappyHorseText2VideoTool(Tool):
                 try:
                     params["seed"] = int(seed)
                 except (TypeError, ValueError):
-                    pass
+                    msg = f"❌ 无效的 seed 参数: {seed}"
+                    logger.error(msg)
+                    yield self.create_text_message(msg)
+                    return
 
-            yield self.create_text_message("🚀 HappyHorse文生视频任务启动中...")
-            yield self.create_text_message(f"🤖 使用模型: {model}")
             yield self.create_text_message(
-                f"📝 提示词: {prompt[:100]}{'...' if len(prompt) > 100 else ''}"
+                "🚀 HappyHorse文生视频任务启动中...\n"
+                f"🤖 使用模型: {model}\n"
+                f"📝 提示词: {prompt[:100]}{'...' if len(prompt) > 100 else ''}\n"
+                "⏳ 正在连接通义API..."
             )
-            yield self.create_text_message("⏳ 正在连接通义API...")
 
             logger.info("Request Payload: %s", json.dumps(payload, ensure_ascii=False))
 
@@ -90,7 +96,7 @@ class HappyHorseText2VideoTool(Tool):
                     api_url,
                     headers=headers,
                     json=payload,
-                    timeout=60,
+                    timeout=15,
                 )
             except requests.exceptions.Timeout:
                 msg = "❌ 请求超时，请稍后重试"
