@@ -38,105 +38,19 @@ parameters:
       zh_Hans: "视频生成的文本描述"
     llm_description: "Text prompt describing the video to generate"
     form: llm
-  - name: image_input_1
-    type: file
+  - name: files
+    type: files
     required: true
     label:
-      en_US: "Reference Image 1"
-      zh_Hans: "参考图 1"
+      en_US: "Reference Images"
+      zh_Hans: "参考图片"
     human_description:
-      en_US: "Upload an image file to be used as reference"
-      zh_Hans: "上传一个图片文件作为参考图"
-    llm_description: "First required reference image"
+      en_US: "Upload reference image files (1-9 images)"
+      zh_Hans: "上传参考图片文件（1-9张图片）"
+    llm_description: "Reference images for video generation (1-9 images required)"
     form: llm
-  - name: image_input_2
-    type: file
-    required: false
-    label:
-      en_US: "Reference Image 2"
-      zh_Hans: "参考图 2"
-    human_description:
-      en_US: "Upload an optional image file to be used as reference"
-      zh_Hans: "上传可选图片文件作为参考图"
-    llm_description: "Optional reference image 2"
-    form: llm
-  - name: image_input_3
-    type: file
-    required: false
-    label:
-      en_US: "Reference Image 3"
-      zh_Hans: "参考图 3"
-    human_description:
-      en_US: "Upload an optional image file to be used as reference"
-      zh_Hans: "上传可选图片文件作为参考图"
-    llm_description: "Optional reference image 3"
-    form: llm
-  - name: image_input_4
-    type: file
-    required: false
-    label:
-      en_US: "Reference Image 4"
-      zh_Hans: "参考图 4"
-    human_description:
-      en_US: "Upload an optional image file to be used as reference"
-      zh_Hans: "上传可选图片文件作为参考图"
-    llm_description: "Optional reference image 4"
-    form: llm
-  - name: image_input_5
-    type: file
-    required: false
-    label:
-      en_US: "Reference Image 5"
-      zh_Hans: "参考图 5"
-    human_description:
-      en_US: "Upload an optional image file to be used as reference"
-      zh_Hans: "上传可选图片文件作为参考图"
-    llm_description: "Optional reference image 5"
-    form: llm
-  - name: image_input_6
-    type: file
-    required: false
-    label:
-      en_US: "Reference Image 6"
-      zh_Hans: "参考图 6"
-    human_description:
-      en_US: "Upload an optional image file to be used as reference"
-      zh_Hans: "上传可选图片文件作为参考图"
-    llm_description: "Optional reference image 6"
-    form: llm
-  - name: image_input_7
-    type: file
-    required: false
-    label:
-      en_US: "Reference Image 7"
-      zh_Hans: "参考图 7"
-    human_description:
-      en_US: "Upload an optional image file to be used as reference"
-      zh_Hans: "上传可选图片文件作为参考图"
-    llm_description: "Optional reference image 7"
-    form: llm
-  - name: image_input_8
-    type: file
-    required: false
-    label:
-      en_US: "Reference Image 8"
-      zh_Hans: "参考图 8"
-    human_description:
-      en_US: "Upload an optional image file to be used as reference"
-      zh_Hans: "上传可选图片文件作为参考图"
-    llm_description: "Optional reference image 8"
-    form: llm
-  - name: image_input_9
-    type: file
-    required: false
-    label:
-      en_US: "Reference Image 9"
-      zh_Hans: "参考图 9"
-    human_description:
-      en_US: "Upload an optional image file to be used as reference"
-      zh_Hans: "上传可选图片文件作为参考图"
-    llm_description: "Optional reference image 9"
-    form: llm
+    min: 1
+    max: 9
   - name: resolution
     type: select
     required: false

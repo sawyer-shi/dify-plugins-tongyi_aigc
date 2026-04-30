@@ -39,22 +39,25 @@ class HappyHorseReferenceVideoTool(Tool):
             
             # Process reference images
             media: list[dict[str, str]] = []
-            for i in range(1, 10):
-                input_key = f"image_input_{i}"
-                image_obj = tool_parameters.get(input_key)
-                if image_obj:
+            files = tool_parameters.get("files")
+            if files:
+                if isinstance(files, list):
+                    file_list = files
+                else:
+                    file_list = [files]
+                for file_obj in file_list:
                     try:
-                        processed_img = self._process_image(image_obj)
+                        processed_img = self._process_image(file_obj)
                         if processed_img:
                             media.append({"type": "reference_image", "url": processed_img})
                     except ValueError as e:
-                        msg = f"❌ {input_key} 处理失败: {str(e)}"
+                        msg = f"❌ 参考图片处理失败: {str(e)}"
                         logger.error(msg)
                         yield self.create_text_message(msg)
                         return
             
             if not media:
-                msg = "❌ 请至少提供一张有效的参考图像 (image_input_1)"
+                msg = "❌ 请至少提供一张有效的参考图像 (files, 1-9张)"
                 logger.error(msg)
                 yield self.create_text_message(msg)
                 return
