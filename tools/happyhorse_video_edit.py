@@ -52,20 +52,23 @@ class HappyHorseVideoEditTool(Tool):
 
             media: list[dict[str, str]] = [{"type": "video", "url": video_url}]
             reference_image_count = 0
-            for idx in range(1, 6):
-                key = f"reference_image_{idx}"
-                image_obj = tool_parameters.get(key)
-                if not image_obj:
-                    continue
-                try:
-                    processed = self._process_image(image_obj)
-                except ValueError as err:
-                    msg = f"❌ 参考图片{idx}处理失败: {str(err)}"
-                    logger.error(msg)
-                    yield self.create_text_message(msg)
-                    return
-                media.append({"type": "reference_image", "url": processed})
-                reference_image_count += 1
+            
+            files = tool_parameters.get("files")
+            if files:
+                if isinstance(files, list):
+                    file_list = files
+                else:
+                    file_list = [files]
+                for file_obj in file_list:
+                    try:
+                        processed = self._process_image(file_obj)
+                    except ValueError as err:
+                        msg = f"❌ 参考图片处理失败: {str(err)}"
+                        logger.error(msg)
+                        yield self.create_text_message(msg)
+                        return
+                    media.append({"type": "reference_image", "url": processed})
+                    reference_image_count += 1
 
             payload: dict[str, Any] = {
                 "model": model,

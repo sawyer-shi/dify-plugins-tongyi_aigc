@@ -49,61 +49,19 @@ parameters:
       zh_Hans: "输入视频的可访问链接"
     llm_description: "Public URL of the input video to edit"
     form: llm
-  - name: reference_image_1
-    type: file
+  - name: files
+    type: files
     required: false
     label:
-      en_US: "Reference Image 1"
-      zh_Hans: "参考图1"
+      en_US: "Reference Images"
+      zh_Hans: "参考图片"
     human_description:
-      en_US: "Optional reference image 1"
-      zh_Hans: "可选参考图片1"
-    llm_description: "Optional first reference image for editing guidance"
+      en_US: "Upload optional reference image files (1-5 images)"
+      zh_Hans: "上传可选参考图片文件（1-5张图片）"
+    llm_description: "Optional reference images for editing guidance (1-5 images)"
     form: llm
-  - name: reference_image_2
-    type: file
-    required: false
-    label:
-      en_US: "Reference Image 2"
-      zh_Hans: "参考图2"
-    human_description:
-      en_US: "Optional reference image 2"
-      zh_Hans: "可选参考图片2"
-    llm_description: "Optional second reference image for editing guidance"
-    form: llm
-  - name: reference_image_3
-    type: file
-    required: false
-    label:
-      en_US: "Reference Image 3"
-      zh_Hans: "参考图3"
-    human_description:
-      en_US: "Optional reference image 3"
-      zh_Hans: "可选参考图片3"
-    llm_description: "Optional third reference image for editing guidance"
-    form: llm
-  - name: reference_image_4
-    type: file
-    required: false
-    label:
-      en_US: "Reference Image 4"
-      zh_Hans: "参考图4"
-    human_description:
-      en_US: "Optional reference image 4"
-      zh_Hans: "可选参考图片4"
-    llm_description: "Optional fourth reference image for editing guidance"
-    form: llm
-  - name: reference_image_5
-    type: file
-    required: false
-    label:
-      en_US: "Reference Image 5"
-      zh_Hans: "参考图5"
-    human_description:
-      en_US: "Optional reference image 5"
-      zh_Hans: "可选参考图片5"
-    llm_description: "Optional fifth reference image for editing guidance"
-    form: llm
+    min: 1
+    max: 5
   - name: resolution
     type: select
     required: false
