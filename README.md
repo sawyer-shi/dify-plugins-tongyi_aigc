@@ -371,6 +371,67 @@ Query image translation task status.
 - **Parameters**:
   - `task_id`: Translation task ID (required)
 
+#### 13. HappyHorse Text to Video
+Generate videos from text using HappyHorse model.
+- **Parameters**:
+  - `model`: Model version (default: happyhorse-1.0-t2v)
+  - `prompt`: Text description for video generation (required)
+  - `resolution`: Video resolution - 720P or 1080P (default: 1080P)
+  - `ratio`: Aspect ratio - 16:9, 9:16, 1:1, 4:3, 3:4 (default: 16:9)
+  - `duration`: Video duration in seconds, range [3, 15] (default: 5)
+  - `watermark`: Enable/disable watermark (default: true)
+  - `seed`: Random seed for reproducibility
+
+#### 14. HappyHorse Image to Video - First Frame
+Generate videos from images using HappyHorse model.
+- **Parameters**:
+  - `model`: Model version (default: happyhorse-1.0-i2v)
+  - `prompt`: Text description for video generation (optional)
+  - `image_input`: First frame image file (optional)
+  - `resolution`: Video resolution - 720P or 1080P (default: 1080P)
+  - `duration`: Video duration in seconds, range [3, 15] (default: 5)
+  - `watermark`: Enable/disable watermark (default: true)
+  - `seed`: Random seed for reproducibility
+
+#### 15. HappyHorse Reference Video
+Generate videos from multiple reference images using HappyHorse model.
+- **Parameters**:
+  - `model`: Model version (default: happyhorse-1.0-r2v)
+  - `prompt`: Text description for video generation (required)
+  - `files`: Reference image files (1-9 images, required)
+  - `resolution`: Video resolution - 720P or 1080P (default: 1080P)
+  - `ratio`: Aspect ratio - 16:9, 9:16, 3:4, 4:3, 1:1 (default: 16:9)
+  - `duration`: Video duration in seconds, range [3, 15] (default: 5)
+  - `watermark`: Enable/disable watermark (default: true)
+  - `seed`: Random seed for reproducibility
+
+#### 16. HappyHorse Video Edit
+Edit videos using HappyHorse model with optional reference images.
+- **Parameters**:
+  - `model`: Model version (default: happyhorse-1.0-video-edit)
+  - `prompt`: Editing instruction for the video (required)
+  - `video_url`: Public URL of the input video (required)
+  - `files`: Optional reference image files (1-5 images)
+  - `resolution`: Video resolution - 720P or 1080P (default: 1080P)
+  - `watermark`: Enable/disable watermark (default: true)
+  - `audio_setting`: Audio handling mode - auto or origin (default: auto)
+  - `seed`: Random seed for reproducibility
+
+#### 17. Video Continue
+Continue videos from first clip using wan2.7-i2v model.
+- **Parameters**:
+  - `model`: Model version (default: wan2.7-i2v)
+  - `prompt`: Describe how the video should continue (optional, max 5000 chars)
+  - `negative_prompt`: Describe what should not appear (optional, max 500 chars)
+  - `first_clip_input`: First clip file (mp4/mov, 2-10s recommended)
+  - `first_clip_url`: First clip URL (http/https/oss)
+  - `last_frame_input`: Last frame image file (optional)
+  - `last_frame_url`: Last frame image URL (optional)
+  - `resolution`: Video resolution (default: 1080P)
+  - `duration`: Video duration in seconds, range [2, 15] (default: 5)
+  - `watermark`: Enable/disable watermark (default: true)
+  - `seed`: Random seed for reproducibility
+
 ## Notes
 
 - Video generation is asynchronous; use Video Query to check status and retrieve results

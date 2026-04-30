@@ -369,6 +369,67 @@ AI 驱动的 OCR 和翻译功能，翻译图像中的文字。
 - **参数**:
   - `task_id`: 翻译任务 ID（必需）
 
+#### 13. HappyHorse 文生视频
+使用 HappyHorse 模型从文本生成视频。
+- **参数**:
+  - `model`: 模型版本（默认：happyhorse-1.0-t2v）
+  - `prompt`: 视频生成的文本描述（必需）
+  - `resolution`: 视频分辨率 - 720P 或 1080P（默认：1080P）
+  - `ratio`: 宽高比 - 16:9, 9:16, 1:1, 4:3, 3:4（默认：16:9）
+  - `duration`: 视频时长（秒），取值范围[3, 15]（默认：5）
+  - `watermark`: 启用/禁用水印（默认：启用）
+  - `seed`: 随机种子可复现
+
+#### 14. HappyHorse 图生视频-基于首帧
+使用 HappyHorse 模型从图像生成视频。
+- **参数**:
+  - `model`: 模型版本（默认：happyhorse-1.0-i2v）
+  - `prompt`: 视频生成的文本描述（可选）
+  - `image_input`: 首帧图片文件（可选）
+  - `resolution`: 视频分辨率 - 720P 或 1080P（默认：1080P）
+  - `duration`: 视频时长（秒），取值范围[3, 15]（默认：5）
+  - `watermark`: 启用/禁用水印（默认：启用）
+  - `seed`: 随机种子可复现
+
+#### 15. HappyHorse 参考生视频
+使用 HappyHorse 模型从多张参考图生成视频。
+- **参数**:
+  - `model`: 模型版本（默认：happyhorse-1.0-r2v）
+  - `prompt`: 视频生成的文本描述（必需）
+  - `files`: 参考图片文件（1-9张，必需）
+  - `resolution`: 视频分辨率 - 720P 或 1080P（默认：1080P）
+  - `ratio`: 宽高比 - 16:9, 9:16, 3:4, 4:3, 1:1（默认：16:9）
+  - `duration`: 视频时长（秒），取值范围[3, 15]（默认：5）
+  - `watermark`: 启用/禁用水印（默认：启用）
+  - `seed`: 随机种子可复现
+
+#### 16. HappyHorse 视频编辑
+使用 HappyHorse 模型并结合可选参考图进行视频编辑。
+- **参数**:
+  - `model`: 模型版本（默认：happyhorse-1.0-video-edit）
+  - `prompt`: 视频编辑的文本指令（必需）
+  - `video_url`: 输入视频的公开链接（必需）
+  - `files`: 可选参考图片文件（1-5张）
+  - `resolution`: 视频分辨率 - 720P 或 1080P（默认：1080P）
+  - `watermark`: 启用/禁用水印（默认：启用）
+  - `audio_setting`: 音频处理模式 - auto 或 origin（默认：auto）
+  - `seed`: 随机种子可复现
+
+#### 17. 视频续写
+使用 wan2.7-i2v 模型基于首段视频进行续写。
+- **参数**:
+  - `model`: 模型版本（默认：wan2.7-i2v）
+  - `prompt`: 描述视频如何继续生成（可选，最多5000字符）
+  - `negative_prompt`: 描述不希望出现的内容（可选，最多500字符）
+  - `first_clip_input`: 首段视频文件（mp4/mov，建议2-10秒）
+  - `first_clip_url`: 首段视频链接（http/https/oss）
+  - `last_frame_input`: 尾帧图片文件（可选）
+  - `last_frame_url`: 尾帧图片链接（可选）
+  - `resolution`: 视频分辨率（默认：1080P）
+  - `duration`: 视频时长（秒），取值范围[2, 15]（默认：5）
+  - `watermark`: 启用/禁用水印（默认：启用）
+  - `seed`: 随机种子可复现
+
 ## 注意事项
 
 - 视频生成是异步的，使用视频查询工具检查状态并获取结果
