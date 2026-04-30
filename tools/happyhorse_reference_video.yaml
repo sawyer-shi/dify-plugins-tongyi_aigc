@@ -1,0 +1,233 @@
+identity:
+  name: "happyhorse_reference_video"
+  author: "sawyer-shi"
+  label:
+    en_US: "HappyHorse-Reference to Video"
+    zh_Hans: "HappyHorse-参考图生视频"
+description:
+  human:
+    en_US: "Generate video from reference images using Tongyi HappyHorse API"
+    zh_Hans: "使用通义HappyHorse模型从参考图生成视频"
+  llm: "Create video from multiple reference images using HappyHorse model with customizable parameters like resolution, ratio, duration, watermark, and seed."
+parameters:
+  - name: model
+    type: select
+    required: true
+    label:
+      en_US: "Model"
+      zh_Hans: "模型"
+    human_description:
+      en_US: "AI model to use for reference-to-video generation"
+      zh_Hans: "用于参考图生视频的AI模型"
+    llm_description: "AI model for reference-to-video generation"
+    form: form
+    default: "happyhorse-1.0-r2v"
+    options:
+      - value: "happyhorse-1.0-r2v"
+        label:
+          en_US: "HappyHorse 1.0 Reference to Video"
+          zh_Hans: "HappyHorse 1.0 参考图生视频"
+  - name: prompt
+    type: string
+    required: true
+    label:
+      en_US: "Prompt"
+      zh_Hans: "提示词"
+    human_description:
+      en_US: "Text description for video generation"
+      zh_Hans: "视频生成的文本描述"
+    llm_description: "Text prompt describing the video to generate"
+    form: llm
+  - name: image_input_1
+    type: file
+    required: true
+    label:
+      en_US: "Reference Image 1"
+      zh_Hans: "参考图 1"
+    human_description:
+      en_US: "Upload an image file to be used as reference"
+      zh_Hans: "上传一个图片文件作为参考图"
+    llm_description: "First required reference image"
+    form: llm
+  - name: image_input_2
+    type: file
+    required: false
+    label:
+      en_US: "Reference Image 2"
+      zh_Hans: "参考图 2"
+    human_description:
+      en_US: "Upload an optional image file to be used as reference"
+      zh_Hans: "上传可选图片文件作为参考图"
+    llm_description: "Optional reference image 2"
+    form: llm
+  - name: image_input_3
+    type: file
+    required: false
+    label:
+      en_US: "Reference Image 3"
+      zh_Hans: "参考图 3"
+    human_description:
+      en_US: "Upload an optional image file to be used as reference"
+      zh_Hans: "上传可选图片文件作为参考图"
+    llm_description: "Optional reference image 3"
+    form: llm
+  - name: image_input_4
+    type: file
+    required: false
+    label:
+      en_US: "Reference Image 4"
+      zh_Hans: "参考图 4"
+    human_description:
+      en_US: "Upload an optional image file to be used as reference"
+      zh_Hans: "上传可选图片文件作为参考图"
+    llm_description: "Optional reference image 4"
+    form: llm
+  - name: image_input_5
+    type: file
+    required: false
+    label:
+      en_US: "Reference Image 5"
+      zh_Hans: "参考图 5"
+    human_description:
+      en_US: "Upload an optional image file to be used as reference"
+      zh_Hans: "上传可选图片文件作为参考图"
+    llm_description: "Optional reference image 5"
+    form: llm
+  - name: image_input_6
+    type: file
+    required: false
+    label:
+      en_US: "Reference Image 6"
+      zh_Hans: "参考图 6"
+    human_description:
+      en_US: "Upload an optional image file to be used as reference"
+      zh_Hans: "上传可选图片文件作为参考图"
+    llm_description: "Optional reference image 6"
+    form: llm
+  - name: image_input_7
+    type: file
+    required: false
+    label:
+      en_US: "Reference Image 7"
+      zh_Hans: "参考图 7"
+    human_description:
+      en_US: "Upload an optional image file to be used as reference"
+      zh_Hans: "上传可选图片文件作为参考图"
+    llm_description: "Optional reference image 7"
+    form: llm
+  - name: image_input_8
+    type: file
+    required: false
+    label:
+      en_US: "Reference Image 8"
+      zh_Hans: "参考图 8"
+    human_description:
+      en_US: "Upload an optional image file to be used as reference"
+      zh_Hans: "上传可选图片文件作为参考图"
+    llm_description: "Optional reference image 8"
+    form: llm
+  - name: image_input_9
+    type: file
+    required: false
+    label:
+      en_US: "Reference Image 9"
+      zh_Hans: "参考图 9"
+    human_description:
+      en_US: "Upload an optional image file to be used as reference"
+      zh_Hans: "上传可选图片文件作为参考图"
+    llm_description: "Optional reference image 9"
+    form: llm
+  - name: resolution
+    type: select
+    required: false
+    label:
+      en_US: "Resolution"
+      zh_Hans: "分辨率"
+    human_description:
+      en_US: "Video resolution. Select 720P or 1080P."
+      zh_Hans: "视频分辨率。可选 720P 或 1080P。"
+    llm_description: "Resolution for the generated video"
+    form: form
+    default: "1080P"
+    options:
+      - value: "720P"
+        label:
+          en_US: "720P"
+          zh_Hans: "720P"
+      - value: "1080P"
+        label:
+          en_US: "1080P"
+          zh_Hans: "1080P"
+  - name: ratio
+    type: select
+    required: false
+    label:
+      en_US: "Aspect Ratio"
+      zh_Hans: "宽高比"
+    human_description:
+      en_US: "Aspect ratio of the generated video."
+      zh_Hans: "生成视频的宽高比。"
+    llm_description: "Aspect ratio of the generated video"
+    form: form
+    default: "16:9"
+    options:
+      - value: "16:9"
+        label:
+          en_US: "16:9"
+          zh_Hans: "16:9"
+      - value: "9:16"
+        label:
+          en_US: "9:16"
+          zh_Hans: "9:16"
+      - value: "3:4"
+        label:
+          en_US: "3:4"
+          zh_Hans: "3:4"
+      - value: "4:3"
+        label:
+          en_US: "4:3"
+          zh_Hans: "4:3"
+      - value: "1:1"
+        label:
+          en_US: "1:1"
+          zh_Hans: "1:1"
+  - name: duration
+    type: number
+    required: false
+    label:
+      en_US: "Duration (seconds)"
+      zh_Hans: "时长(秒)"
+    human_description:
+      en_US: "Duration of the generated video in seconds, range [3, 15]."
+      zh_Hans: "生成视频的时长（秒），取值范围[3, 15]。"
+    llm_description: "Duration of the generated video in seconds"
+    form: form
+    default: 5
+    min: 3
+    max: 15
+  - name: watermark
+    type: boolean
+    required: false
+    label:
+      en_US: "Watermark"
+      zh_Hans: "水印"
+    human_description:
+      en_US: "Add watermark to the video"
+      zh_Hans: "在视频中添加水印"
+    llm_description: "Whether to add watermark"
+    form: form
+    default: true
+  - name: seed
+    type: number
+    required: false
+    label:
+      en_US: "Seed"
+      zh_Hans: "随机种子"
+    human_description:
+      en_US: "Random seed for reproducible results"
+      zh_Hans: "用于可重复结果的随机种子"
+    llm_description: "Random seed for reproducible results"
+    form: form
+extra:
+  python:
+    source: tools/happyhorse_reference_video.py
