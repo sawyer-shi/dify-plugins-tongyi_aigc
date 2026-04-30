@@ -2,8 +2,8 @@ identity:
   name: "wan_video_query"
   author: "sawyer-shi"
   label:
-    en_US: "Wan-Video Query"
-    zh_Hans: "Wan-视频结果查询"
+    en_US: "Video Query"
+    zh_Hans: "视频结果查询"
 description:
   human:
     en_US: "Query the status and results of Wanxiang video tasks"
