@@ -34,7 +34,9 @@ A powerful Dify plugin providing comprehensive AI-powered image and video genera
 3. Start generating images and videos with AI
 
 ## Key Features
-<img width="362" height="958" alt="CN" src="https://github.com/user-attachments/assets/240b3665-529f-4dc2-b572-7f9f7e277024" /><img width="318" height="954" alt="EN" src="https://github.com/user-attachments/assets/ea3b8fdb-379d-4159-a175-77edb3844db5" />
+<img width="326" height="1141" alt="cn" src="https://github.com/user-attachments/assets/4f410524-c1f0-4146-b8b0-fe8f63e0ef64" /><img width="291" height="1210" alt="EN" src="https://github.com/user-attachments/assets/fe507baa-51d3-457b-9f38-affd8a9f573a" />
+
+
 
 - **Multiple Generation Modes**: Text-to-image, text-to-video, image-to-image, image-to-video, image translation
 - **Latest AI Models**: Supports wan2.7, qwen-image2.0, Z-image, wan2.6, wan2.5, wan2.2 for images; wan2.7-t2v, wan2.6-t2v, wan2.5-t2v-preview, wan2.2-t2v-plus for videos
