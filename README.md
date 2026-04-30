@@ -12,10 +12,10 @@ A powerful Dify plugin providing comprehensive AI-powered image and video genera
 ### Version History
 - **v0.0.3** (2026-04-26):
   - Added **HappyHorse** series models for video generation
-  - Added HappyHorse Text to Video (文生视频)
-  - Added HappyHorse Image to Video - First Frame (图生视频-基于首帧)
-  - Added HappyHorse Reference Video (参考生视频)
-  - Added HappyHorse Video Editing (视频编辑)
+  - Added HappyHorse Text to Video
+  - Added HappyHorse Image to Video - First Frame
+  - Added HappyHorse Reference Video 
+  - Added HappyHorse Video Editing 
 - **v0.0.2** (2026-04-12): 
   - Added new **Video Continuation** tool (wan_video_continue) - Continue video from existing clips using wan2.7-i2v
   - Added wan2.7-t2v model support for Text to Video
