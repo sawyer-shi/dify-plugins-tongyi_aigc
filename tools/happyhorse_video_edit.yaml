@@ -1,0 +1,174 @@
+identity:
+  name: "happyhorse_video_edit"
+  author: "sawyer-shi"
+  label:
+    en_US: "HappyHorse-Video Edit"
+    zh_Hans: "HappyHorse-视频编辑"
+description:
+  human:
+    en_US: "Edit video with optional reference images using Tongyi HappyHorse API"
+    zh_Hans: "使用通义HappyHorse模型并结合可选参考图进行视频编辑"
+  llm: "Edit an input video with an instruction prompt and optional reference images using the HappyHorse video edit model."
+parameters:
+  - name: model
+    type: select
+    required: true
+    label:
+      en_US: "Model"
+      zh_Hans: "模型"
+    human_description:
+      en_US: "AI model to use for video editing"
+      zh_Hans: "用于视频编辑的AI模型"
+    llm_description: "AI model for video editing"
+    form: form
+    default: "happyhorse-1.0-video-edit"
+    options:
+      - value: "happyhorse-1.0-video-edit"
+        label:
+          en_US: "HappyHorse 1.0 Video Edit"
+          zh_Hans: "HappyHorse 1.0 视频编辑"
+  - name: prompt
+    type: string
+    required: true
+    label:
+      en_US: "Prompt"
+      zh_Hans: "提示词"
+    human_description:
+      en_US: "Editing instruction for the video"
+      zh_Hans: "用于视频编辑的文本指令"
+    llm_description: "Text instruction describing how to edit the video"
+    form: llm
+  - name: video_url
+    type: string
+    required: true
+    label:
+      en_US: "Video URL"
+      zh_Hans: "视频链接"
+    human_description:
+      en_US: "Public URL of the input video"
+      zh_Hans: "输入视频的可访问链接"
+    llm_description: "Public URL of the input video to edit"
+    form: llm
+  - name: reference_image_1
+    type: file
+    required: false
+    label:
+      en_US: "Reference Image 1"
+      zh_Hans: "参考图1"
+    human_description:
+      en_US: "Optional reference image 1"
+      zh_Hans: "可选参考图片1"
+    llm_description: "Optional first reference image for editing guidance"
+    form: llm
+  - name: reference_image_2
+    type: file
+    required: false
+    label:
+      en_US: "Reference Image 2"
+      zh_Hans: "参考图2"
+    human_description:
+      en_US: "Optional reference image 2"
+      zh_Hans: "可选参考图片2"
+    llm_description: "Optional second reference image for editing guidance"
+    form: llm
+  - name: reference_image_3
+    type: file
+    required: false
+    label:
+      en_US: "Reference Image 3"
+      zh_Hans: "参考图3"
+    human_description:
+      en_US: "Optional reference image 3"
+      zh_Hans: "可选参考图片3"
+    llm_description: "Optional third reference image for editing guidance"
+    form: llm
+  - name: reference_image_4
+    type: file
+    required: false
+    label:
+      en_US: "Reference Image 4"
+      zh_Hans: "参考图4"
+    human_description:
+      en_US: "Optional reference image 4"
+      zh_Hans: "可选参考图片4"
+    llm_description: "Optional fourth reference image for editing guidance"
+    form: llm
+  - name: reference_image_5
+    type: file
+    required: false
+    label:
+      en_US: "Reference Image 5"
+      zh_Hans: "参考图5"
+    human_description:
+      en_US: "Optional reference image 5"
+      zh_Hans: "可选参考图片5"
+    llm_description: "Optional fifth reference image for editing guidance"
+    form: llm
+  - name: resolution
+    type: select
+    required: false
+    label:
+      en_US: "Resolution"
+      zh_Hans: "分辨率"
+    human_description:
+      en_US: "Video resolution. Select 720P or 1080P."
+      zh_Hans: "视频分辨率。可选 720P 或 1080P。"
+    llm_description: "Resolution for the edited video"
+    form: form
+    default: "1080P"
+    options:
+      - value: "720P"
+        label:
+          en_US: "720P"
+          zh_Hans: "720P"
+      - value: "1080P"
+        label:
+          en_US: "1080P"
+          zh_Hans: "1080P"
+  - name: watermark
+    type: boolean
+    required: false
+    label:
+      en_US: "Watermark"
+      zh_Hans: "水印"
+    human_description:
+      en_US: "Add watermark to the video"
+      zh_Hans: "在视频中添加水印"
+    llm_description: "Whether to add watermark"
+    form: form
+    default: true
+  - name: audio_setting
+    type: select
+    required: false
+    label:
+      en_US: "Audio Setting"
+      zh_Hans: "音频设置"
+    human_description:
+      en_US: "Audio handling mode for edited video"
+      zh_Hans: "编辑后视频的音频处理模式"
+    llm_description: "Audio handling mode, choose auto or origin"
+    form: form
+    default: "auto"
+    options:
+      - value: "auto"
+        label:
+          en_US: "Auto"
+          zh_Hans: "自动"
+      - value: "origin"
+        label:
+          en_US: "Origin"
+          zh_Hans: "原音频"
+  - name: seed
+    type: number
+    required: false
+    label:
+      en_US: "Seed"
+      zh_Hans: "随机种子"
+    human_description:
+      en_US: "Random seed for reproducible results"
+      zh_Hans: "用于可重复结果的随机种子"
+    llm_description: "Random seed for reproducible results"
+    form: form
+extra:
+  python:
+    source: tools/happyhorse_video_edit.py
