@@ -34,7 +34,7 @@
 3. 开始使用 AI 生成图像和视频
 
 ## 核心特性
-<img width="362" height="958" alt="CN" src="https://github.com/user-attachments/assets/240b3665-529f-4dc2-b572-7f9f7e277024" /><img width="318" height="954" alt="EN" src="https://github.com/user-attachments/assets/ea3b8fdb-379d-4159-a175-77edb3844db5" />
+<img width="326" height="1141" alt="cn" src="https://github.com/user-attachments/assets/4f410524-c1f0-4146-b8b0-fe8f63e0ef64" /><img width="291" height="1210" alt="EN" src="https://github.com/user-attachments/assets/fe507baa-51d3-457b-9f38-affd8a9f573a" />
 
 - **多种生成模式**: 文生图、文生视频、图生图、图生视频、图像翻译
 - **最新 AI 模型**: 支持图像生成使用 wan2.7、qwen-image2.0、Z-image、wan2.6、wan2.5、wan2.2；视频生成使用 wan2.7-t2v、wan2.6-t2v、wan2.5-t2v-preview、wan2.2-t2v-plus
