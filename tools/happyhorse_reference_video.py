@@ -297,4 +297,4 @@ class HappyHorseReferenceVideoTool(Tool):
             return f"data:{mime};base64,{b64_str}"
         except Exception as e:
             logger.error("Image processing failed: %s", str(e))
-            return ""
+            raise ValueError(f"Failed to process image: {str(e)}")
