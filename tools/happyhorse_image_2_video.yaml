@@ -49,17 +49,6 @@ parameters:
       zh_Hans: "上传一个图片文件作为视频的第一帧"
     llm_description: "Upload an image file to be used as the first frame"
     form: llm
-  - name: img_url
-    type: string
-    required: false
-    label:
-      en_US: "First Frame URL"
-      zh_Hans: "首帧URL"
-    human_description:
-      en_US: "Public URL for first frame image (http/https/oss)"
-      zh_Hans: "首帧图像的公网URL（http/https/oss）"
-    llm_description: "First frame image URL"
-    form: llm
   - name: resolution
     type: select
     required: false

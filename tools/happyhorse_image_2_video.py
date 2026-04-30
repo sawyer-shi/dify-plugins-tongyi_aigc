@@ -39,9 +39,8 @@ class HappyHorseImage2VideoTool(Tool):
             
             # Extract and process image
             image_obj = tool_parameters.get("image_input")
-            img_url_str = tool_parameters.get("img_url")
             try:
-                processed_img = self._process_image(image_obj if image_obj else img_url_str)
+                processed_img = self._process_image(image_obj)
             except ValueError as e:
                 msg = f"❌ {str(e)}"
                 logger.error(msg)
@@ -49,7 +48,7 @@ class HappyHorseImage2VideoTool(Tool):
                 return
             
             if not processed_img:
-                msg = "❌ 请提供有效的图像输入 (image_input 优先级高于 img_url)"
+                msg = "❌ 请提供有效的图像输入"
                 logger.error(msg)
                 yield self.create_text_message(msg)
                 return
