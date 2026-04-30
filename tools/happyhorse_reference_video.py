@@ -35,7 +35,7 @@ class HappyHorseReferenceVideoTool(Tool):
                 "X-DashScope-Async": "enable",
             }
 
-            model = str(tool_parameters.get("model") or "happyhorse-1.0-i2v").strip()
+            model = str(tool_parameters.get("model") or "happyhorse-1.0-r2v").strip()
             
             # Process reference images
             media: list[dict[str, str]] = []
@@ -86,7 +86,7 @@ class HappyHorseReferenceVideoTool(Tool):
             duration = tool_parameters.get("duration")
             if duration is not None:
                 try:
-                    params["duration"] = int(duration)
+                    params["duration"] = max(3, min(15, int(duration)))
                 except (TypeError, ValueError):
                     msg = f"❌ 无效的 duration 参数: {duration}，必须是整数"
                     logger.error(msg)
