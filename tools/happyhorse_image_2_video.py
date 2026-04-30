@@ -40,7 +40,13 @@ class HappyHorseImage2VideoTool(Tool):
             # Extract and process image
             image_obj = tool_parameters.get("image_input")
             img_url_str = tool_parameters.get("img_url")
-            processed_img = self._process_image(image_obj if image_obj else img_url_str)
+            try:
+                processed_img = self._process_image(image_obj if image_obj else img_url_str)
+            except ValueError as e:
+                msg = f"❌ {str(e)}"
+                logger.error(msg)
+                yield self.create_text_message(msg)
+                return
             
             if not processed_img:
                 msg = "❌ 请提供有效的图像输入 (image_input 优先级高于 img_url)"
@@ -251,10 +257,10 @@ class HappyHorseImage2VideoTool(Tool):
         if not image_bytes:
             return ""
 
-        try:
-            if len(image_bytes) > 10 * 1024 * 1024:
-                return ""
+        if len(image_bytes) > 10 * 1024 * 1024:
+            raise ValueError("Image size exceeds 10MB")
 
+        try:
             img = Image.open(BytesIO(image_bytes))
 
             output_fmt = img.format

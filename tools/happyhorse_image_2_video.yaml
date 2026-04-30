@@ -118,7 +118,6 @@ parameters:
       zh_Hans: "用于可重复结果的随机种子"
     llm_description: "Random seed for reproducible results"
     form: form
-    default: 0
 extra:
   python:
     source: tools/happyhorse_image_2_video.py
