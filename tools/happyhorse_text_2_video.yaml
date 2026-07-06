@@ -21,8 +21,12 @@ parameters:
       zh_Hans: "用于文生视频的AI模型"
     llm_description: "AI model for text-to-video generation"
     form: form
-    default: "happyhorse-1.0-t2v"
+    default: "happyhorse-1.1-t2v"
     options:
+      - value: "happyhorse-1.1-t2v"
+        label:
+          en_US: "HappyHorse 1.1 Text to Video"
+          zh_Hans: "HappyHorse 1.1 文生视频"
       - value: "happyhorse-1.0-t2v"
         label:
           en_US: "HappyHorse 1.0 Text to Video"

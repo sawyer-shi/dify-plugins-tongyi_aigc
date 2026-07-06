@@ -4,12 +4,16 @@ A powerful Dify plugin providing comprehensive AI-powered image and video genera
 
 ## Version Information
 
-- **Current Version**: v0.0.3
-- **Release Date**: 2026-04-26
+- **Current Version**: v0.0.4
+- **Release Date**: 2026-07-05
 - **Compatibility**: Dify Plugin Framework
 - **Python Version**: 3.12
 
 ### Version History
+- **v0.0.4** (2026-07-05):
+  - Added **HappyHorse 1.1** model for all HappyHorse video generation tools
+  - Updated default model to happyhorse-1.1 for all HappyHorse features
+  - Available happyhorse-1.1 models: happyhorse-1.1-t2v, happyhorse-1.1-i2v, happyhorse-1.1-r2v
 - **v0.0.3** (2026-04-26):
   - Added **HappyHorse** series models for video generation
   - Added HappyHorse Text to Video

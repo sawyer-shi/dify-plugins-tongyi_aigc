@@ -21,8 +21,12 @@ parameters:
       zh_Hans: "用于参考图生视频的AI模型"
     llm_description: "AI model for reference-to-video generation"
     form: form
-    default: "happyhorse-1.0-r2v"
+    default: "happyhorse-1.1-r2v"
     options:
+      - value: "happyhorse-1.1-r2v"
+        label:
+          en_US: "HappyHorse 1.1 Reference to Video"
+          zh_Hans: "HappyHorse 1.1 参考图生视频"
       - value: "happyhorse-1.0-r2v"
         label:
           en_US: "HappyHorse 1.0 Reference to Video"

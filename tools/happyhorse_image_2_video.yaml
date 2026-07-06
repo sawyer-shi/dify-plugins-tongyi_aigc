@@ -21,8 +21,12 @@ parameters:
       zh_Hans: "用于图生视频的AI模型"
     llm_description: "AI model for image-to-video generation"
     form: form
-    default: "happyhorse-1.0-i2v"
+    default: "happyhorse-1.1-i2v"
     options:
+      - value: "happyhorse-1.1-i2v"
+        label:
+          en_US: "HappyHorse 1.1 Image to Video"
+          zh_Hans: "HappyHorse 1.1 图生视频"
       - value: "happyhorse-1.0-i2v"
         label:
           en_US: "HappyHorse 1.0 Image to Video"
